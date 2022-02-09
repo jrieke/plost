@@ -44,9 +44,11 @@ default_config = _(
     symbol=_(fill=default_color),
     bar=_(fill=default_color),
     range=_(
-        category=_(scheme="category20b"),
-        ordinal=_(scheme="greens"),
-        ramp=_(scheme="greens"),
+        category=[color("blue-70"), color("orange-70"), color("green-70"), color("red-70"), color("teal-70"), color("violet-70"), color("cyan-70")],
+        # TODO: Define continuous color schemes using a function as in 
+        #   https://vega.github.io/vega/docs/schemes/
+        # ordinal=_(scheme="greens"),
+        # ramp=_(scheme="greens"),
     ),
 )
 
