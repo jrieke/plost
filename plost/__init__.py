@@ -6,6 +6,7 @@ You've been writing *plots* wrong all this time!
 import copy
 import numbers
 import streamlit as st
+from itertools import cycle
 
 from .color_palette import get_color
 
@@ -14,6 +15,7 @@ _ = dict
 
 # Config applied to all plots. This sets the style for axes and colors.
 default_color = get_color("blue-70")
+default_color_scheme = [get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")]
 default_config = _(
     axis=_(
         labelColor=get_color("gray-70"),
@@ -55,13 +57,14 @@ default_config = _(
     symbol=_(fill=default_color),
     bar=_(fill=default_color),
     range=_(
-        category=[get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")],
+        category=default_color_scheme,
         # TODO: Define continuous color schemes using a function as in 
         #   https://vega.github.io/vega/docs/schemes/
         # ordinal=_(scheme="greens"),
         # ramp=_(scheme="greens"),
     ),
 )
+color_cycle = cycle(default_color_scheme)
 
 # Config for horizonntal plots, e.g. horizontal bar charts.
 horizontal_config = default_config.copy()
@@ -446,7 +449,7 @@ def line_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
-        config=default_config if 'streamlit' else _,
+        config=default_config if style == 'streamlit' else _,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -578,7 +581,7 @@ def area_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
-        config=default_config if style=="streamlit" else _,
+        config=default_config if style == 'streamlit' else _,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
