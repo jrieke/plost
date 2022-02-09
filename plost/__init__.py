@@ -846,6 +846,7 @@ def _pie_spec(
             theta=_clean_encoding(data, theta),
             color=_clean_encoding(data, color, title=None, legend=_get_legend_dict(legend)),
         ),
+        config=default_config,
     )
 
 
