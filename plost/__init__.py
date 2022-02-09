@@ -429,9 +429,16 @@ def line_chart(
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
-
+    
+    # If there's only one line, cycle through the colors for subsequent charts. Only 
+    # in streamlit style.
+    if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
+        color = next(color_cycle)
+        
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
+        
+    # st.write(color_enc)
 
     meta = _(
         data=data,
@@ -545,6 +552,11 @@ def area_chart(
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
+    
+    # If there's only one area, cycle through the colors for subsequent charts. Only 
+    # in streamlit style.
+    # if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
+    #     color = next(color_cycle)
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
@@ -561,10 +573,11 @@ def area_chart(
         height=height,
         title=title,
     )
-
-    # st.write(color_enc)
-    spec = _(
-        mark=_(type='area', line=True, color=_(
+    
+    if style == 'streamlit' and color_enc is None:
+        area_color = next(color_cycle)
+        # TODO: Use color-30 for the actual gradient fill.
+        mark = _(type='area', line=_(color=area_color), color=_(
             x1=1,
             y1=1,
             x2=1,
@@ -572,8 +585,18 @@ def area_chart(
             gradient="linear",
             stops=[
                 _(offset=0, color="white"),
-                _(offset=1, color=get_color("blue-30"))
-            ]), tooltip=True),
+                _(offset=1, color=area_color)
+            ]), 
+            tooltip=True
+        )
+        
+    else:
+        mark = _(type='area', tooltip=True)
+        
+
+    # st.write(color_enc)
+    spec = _(
+        mark=mark,
         encoding=_(
             x=_clean_encoding(data, x),
             y=y_enc,
@@ -663,6 +686,11 @@ def bar_chart(
     x_enc = _clean_encoding(data, bar, title=None)
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, bar, value, legend, opacity)
+
+    # If there's only one color of bars, cycle through the colors for subsequent charts. 
+    # Only in streamlit style.
+    if not color and style == 'streamlit':
+        color = next(color_cycle)
 
     if color:
         if color == 'value': # 'value', as in the value= arg.

@@ -180,6 +180,22 @@ with st.echo():
     plost.line_chart(
         data=datasets['seattle_weather'],
         x='date',
+        y='temp_max')
+
+""
+
+with st.echo():
+    plost.line_chart(
+        data=datasets['seattle_weather'],
+        x='date',
+        y='temp_max')
+
+""
+
+with st.echo():
+    plost.line_chart(
+        data=datasets['seattle_weather'],
+        x='date',
         y=('temp_max', 'temp_min'))
 
 "---"
