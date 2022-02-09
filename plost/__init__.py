@@ -7,8 +7,97 @@ import copy
 import numbers
 import streamlit as st
 
+from .color_palette import color
+
 # Syntactic sugar to make VegaLite more fun.
 _ = dict
+
+# Config applied to all plots. This sets the style for axes and colors.
+default_color = color("blue-70")
+default_config = _(
+    axis=_(
+        labelColor=color("gray-70"),
+        tickColor=color("gray-30"),
+        gridColor=color("gray-30"),
+        domainColor=color("gray-30"),
+        titleFontWeight=600,
+        titlePadding=10,
+        labelPadding=5,
+    ),
+    axisX=_(
+        grid=False,
+        domain=True,
+        ticks=True,
+    ),
+    axisY=_(
+        grid=True,
+        domain=False,
+        ticks=False,
+    ),
+    view=_(strokeWidth=0),
+    arc=_(fill=default_color),
+    area=_(fill=default_color),
+    line=_(stroke=default_color),
+    path=_(stroke=default_color),
+    rect=_(fill=default_color),
+    shape=_(stroke=default_color),
+    symbol=_(fill=default_color),
+    bar=_(fill=default_color),
+    range=_(
+        category=_(scheme="category20b"),
+        ordinal=_(scheme="greens"),
+        ramp=_(scheme="greens"),
+    ),
+)
+
+# Config for horizonntal plots, e.g. horizontal bar charts.
+horizontal_config = default_config.copy()
+horizontal_config.update(
+    _(
+        axisX=_(
+            grid=True,
+            domain=False,
+            ticks=False,
+        ),
+        axisY=_(
+            grid=False,
+            domain=True,
+            ticks=True,
+        ),
+    )
+)
+
+both_config = default_config.copy()
+both_config.update(
+    _(
+        axisX=_(
+            grid=True,
+            domain=True,
+            ticks=True,
+        ),
+        axisY=_(
+            grid=True,
+            domain=True,
+            ticks=True,
+        ),
+    )
+)
+
+no_grid_config = default_config.copy()
+no_grid_config.update(
+    _(
+        axisX=_(
+            grid=False,
+            domain=True,
+            ticks=True,
+        ),
+        axisY=_(
+            grid=False,
+            domain=True,
+            ticks=True,
+        ),
+    )
+)
 
 def _clean_encoding(data, enc, **kwargs):
     if isinstance(enc, str):
@@ -340,6 +429,7 @@ def line_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
+        config=default_config,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -457,6 +547,7 @@ def area_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
+        config=default_config,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -567,6 +658,9 @@ def bar_chart(
         x_enc, y_enc = y_enc, x_enc
         row_enc, column_enc = column_enc, row_enc
         use_container_width = True
+        config = horizontal_config
+    else:
+        config = default_config
 
     meta = _(
         data=data,
@@ -585,6 +679,7 @@ def bar_chart(
             column=column_enc,
             row=row_enc,
         ),
+        config=config,
     )
 
     spec.update(meta)
@@ -703,6 +798,7 @@ def scatter_chart(
             opacity=_clean_encoding(data, opacity, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
+        config=both_config,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -950,6 +1046,7 @@ def event_chart(
             opacity=_clean_encoding(data, opacity, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
+        config=horizontal_config
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1049,6 +1146,7 @@ def time_hist(
             color=_clean_encoding(data, color, aggregate=aggregate, legend=legend)
         ),
         selection=_get_selection(pan_zoom),
+        config=no_grid_config,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1158,6 +1256,7 @@ def xy_hist(
             color=_clean_encoding(data, color, aggregate=aggregate, legend=legend)
         ),
         selection=_get_selection(pan_zoom),
+        config=no_grid_config,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1250,6 +1349,7 @@ def hist(
             y=_clean_encoding(data, y, aggregate=aggregate),
         ),
         selection=_get_selection(pan_zoom),
+        config=default_config,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
