@@ -551,7 +551,7 @@ def area_chart(
         title=title,
     )
 
-    st.write(color_enc)
+    # st.write(color_enc)
     spec = _(
         mark=_(type='area', line=True, color=_(
             x1=1,
