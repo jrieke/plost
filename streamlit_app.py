@@ -194,6 +194,14 @@ with st.echo():
     plost.area_chart(
         data=datasets['rand'],
         x='a',
+        y='b')
+    
+""
+
+with st.echo():
+    plost.area_chart(
+        data=datasets['rand'],
+        x='a',
         y=('b', 'c'))
 
 ""

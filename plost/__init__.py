@@ -7,19 +7,19 @@ import copy
 import numbers
 import streamlit as st
 
-from .color_palette import color
+from .color_palette import get_color
 
 # Syntactic sugar to make VegaLite more fun.
 _ = dict
 
 # Config applied to all plots. This sets the style for axes and colors.
-default_color = color("blue-70")
+default_color = get_color("blue-70")
 default_config = _(
     axis=_(
-        labelColor=color("gray-70"),
-        tickColor=color("gray-30"),
-        gridColor=color("gray-30"),
-        domainColor=color("gray-30"),
+        labelColor=get_color("gray-70"),
+        tickColor=get_color("gray-30"),
+        gridColor=get_color("gray-30"),
+        domainColor=get_color("gray-30"),
         titleFontWeight=600,
         titlePadding=10,
         labelPadding=5,
@@ -37,6 +37,17 @@ default_config = _(
     view=_(strokeWidth=0),
     arc=_(fill=default_color),
     area=_(fill=default_color),
+    # area=_(fill=default_color, line=True, color=_(
+    #     x1=1,
+    #     y1=1,
+    #     x2=1,
+    #     y2=0,
+    #     gradient="linear",
+    #     stops=[
+    #         _(offset=0, color="white"),
+    #         _(offset=1, color="green")
+    #     ],
+    # )),
     line=_(stroke=default_color),
     path=_(stroke=default_color),
     rect=_(fill=default_color),
@@ -44,7 +55,7 @@ default_config = _(
     symbol=_(fill=default_color),
     bar=_(fill=default_color),
     range=_(
-        category=[color("blue-70"), color("orange-70"), color("green-70"), color("red-70"), color("teal-70"), color("violet-70"), color("cyan-70")],
+        category=[get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")],
         # TODO: Define continuous color schemes using a function as in 
         #   https://vega.github.io/vega/docs/schemes/
         # ordinal=_(scheme="greens"),
@@ -540,8 +551,18 @@ def area_chart(
         title=title,
     )
 
+    st.write(color_enc)
     spec = _(
-        mark=_(type='area', tooltip=True),
+        mark=_(type='area', line=True, color=_(
+            x1=1,
+            y1=1,
+            x2=1,
+            y2=0,
+            gradient="linear",
+            stops=[
+                _(offset=0, color="white"),
+                _(offset=1, color=get_color("blue-30"))
+            ]), tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x),
             y=y_enc,

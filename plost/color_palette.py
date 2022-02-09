@@ -110,7 +110,7 @@ ST_COLOR_PALETTE = {
 }
 
 
-def color(name):
+def get_color(name):
     """Returns a color from the streamlit color palette, e.g. red-100, as hex."""
     hue, intensity = name.rsplit("-", 1)
     return ST_COLOR_PALETTE[hue][intensity]
