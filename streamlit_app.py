@@ -617,6 +617,64 @@ with st.echo():
         pan_zoom="minimap",
     )
 
+"""
+---
+
+# Style and colors
+
+## Default styles
+
+There are two default styles: Passing `config='streamlit'` to a chart (this is the 
+default) activates a modern style with Streamlit's color palette:
+"""
+
+with st.echo():
+    plost.line_chart(
+        data=datasets["seattle_weather"], x="date", y="temp_max", config="streamlit"
+    )
+
+""
+
+"To switch back to Vega-Lite's default style, pass `config=None`:"
+
+with st.echo():
+    plost.line_chart(
+        data=datasets["seattle_weather"], x="date", y="temp_max", config=None
+    )
+
+"---"
+
+"""
+## Custom style
+
+You can also pass a [custom config dict](https://vega.github.io/vega-lite/docs/config.html)
+to a chart to style it in any way you like:
+"""
+
+with st.echo():
+    plost.line_chart(
+        data=datasets["seattle_weather"],
+        x="date",
+        y="temp_max",
+        config={"background": "yellow"},
+    )
+
+"---"
+
+"""
+## Color cycling
+
+If you plot multiple charts after another, they will cycle through a list of colors. This 
+works only with `config='streamlit'` and for charts with a single line/area/etc.
+If a chart contains multiple elements with different colors, color cycling won't work. 
+You can manually switch off color cycling by passing `cycle_color=False` to a chart.
+"""
+
+with st.echo():
+    for _ in range(3):
+        plost.line_chart(data=datasets["seattle_weather"], x="date", y="temp_max")
+
+
 ""
 ""
 ""
