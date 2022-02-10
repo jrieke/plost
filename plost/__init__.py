@@ -56,6 +56,8 @@ default_config = _(
     shape=_(stroke=default_color),
     symbol=_(fill=default_color),
     bar=_(fill=default_color),
+    tick=_(fill=default_color),
+    circle=_(fill=default_color),
     range=_(
         category=default_color_scheme,
         # TODO: Define continuous color schemes using a function as in 
