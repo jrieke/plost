@@ -692,7 +692,7 @@ def bar_chart(
 
     # If there's only one color of bars, cycle through the colors for subsequent charts. 
     # Only in streamlit style.
-    if not color and style == 'streamlit':
+    if not color and style == 'streamlit' and stack != "normalize":
         color = next(color_cycle)
 
     if color:
