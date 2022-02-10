@@ -491,7 +491,6 @@ def line_chart(
                         else False,
                         encodings=["x"],
                     ),
-                    foo=_get_selection(pan_zoom)["foo"],
                 ),
                 mark=_(
                     type="point", filled=True, stroke="white", size=70, tooltip=True
@@ -507,6 +506,11 @@ def line_chart(
         ],
         config=_parse_config(config),
     )
+    
+    # Need to add pan_zoom selection to the selection for hovering.
+    selection = _get_selection(pan_zoom)
+    if selection:
+        spec["layer"][1]["selection"].update(selection)
 
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
@@ -678,7 +682,6 @@ def gradient_chart(
                         else False,
                         encodings=["x"],
                     ),
-                    foo=_get_selection(pan_zoom)["foo"],
                 ),
                 mark=_(
                     type="point", filled=True, stroke="white", size=70, tooltip=True
@@ -695,6 +698,12 @@ def gradient_chart(
         # selection=_get_selection(pan_zoom),
         config=_parse_config(config),
     )
+    
+    # Need to add pan_zoom selection to the selection for hovering.
+    selection = _get_selection(pan_zoom)
+    if selection:
+        spec["layer"][1]["selection"].update(selection)
+
 
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
