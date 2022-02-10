@@ -209,12 +209,25 @@ _MINI_CHART_SIZE = 50
 
 
 def _add_minimap(orig_spec, encodings, location, filter=False):
-    inner_props = {'mark', 'encoding', 'selection', 'width', 'height'}
+    inner_props = {'layer', 'mark', 'encoding', 'selection', 'width', 'height'}
 
     inner_spec = {k: v for (k, v) in orig_spec.items() if k in inner_props}
     outer_spec = {k: v for (k, v) in orig_spec.items() if k not in inner_props}
+    # st.write(inner_spec)
+    # st.write(outer_spec)
+    # st.vega_lite_chart(**inner_spec, **outer_spec)
 
     minimap_spec = copy.deepcopy(inner_spec)
+    # st.vega_lite_chart(**minimap_spec, **outer_spec)
+    
+    # Line chart and gradient chart are made up of layers, where one layer shows the 
+    # actual chart and the 2nd layer shows a point on hover. We want to keep these layers 
+    # in the big chart, but in the minimap we pull out the 1st layer and remove the 
+    # 2nd layer.
+    if 'layer' in minimap_spec:
+        minimap_spec['mark'] = minimap_spec['layer'][0]['mark']
+        del minimap_spec['layer']
+    # st.write(minimap_spec)
 
     is_2d = False
 
@@ -305,6 +318,7 @@ def _add_encoding_annotations(annotation_layers, encoding, annot):
             mark='rule',
             encoding={
                 encoding: _(datum=coord),
+                # "size": _(value=120),
                 "tooltip": _(value=f'{label} ({coord})'),
             },
         ))
@@ -415,16 +429,18 @@ def line_chart(
     spec = _(
         encoding=_(
             x=_clean_encoding(data, x),
+            y=y_enc,
+            color=color_enc,
+            opacity=_clean_encoding(data, opacity),
         ),
         layer=[
             _(
                 # This is the layer that draws the normal line.
                 mark=_(type='line'),
-                encoding=_(
-                    y=y_enc,
-                    color=color_enc,
-                    opacity=_clean_encoding(data, opacity),
-                )
+                # encoding=_(
+                #     color=color_enc,
+                #     opacity=_clean_encoding(data, opacity),
+                # )
             ),
             _(
                 # This layer shows a point on the line when you hover.
@@ -449,8 +465,8 @@ def line_chart(
                 ),
                 mark=_(type="point", filled=True, stroke="white", size=70, tooltip=True),
                 encoding=_(
-                    y=y_enc,
-                    color=color_enc,
+                    # y=y_enc,
+                    # color=color_enc,
                     opacity=_(condition=_(selection="hover_selection", value=1), value=0),
                 )
             )
@@ -584,6 +600,8 @@ def gradient_chart(
     spec = _(
         encoding=_(
             x=_clean_encoding(data, x),
+            y=y_enc,
+            opacity=_clean_encoding(data, opacity),
         ),
         layer=[
             _(
@@ -603,11 +621,9 @@ def gradient_chart(
                         ]
                     )
                 ),
-                encoding=_(
-                    y=y_enc,
-                    # color=color_enc,
-                    opacity=_clean_encoding(data, opacity),
-                )
+                # encoding=_(
+                #     # color=color_enc,
+                # )
             ),
             _(
                 # This layer shows a point on the line when you hover.
@@ -632,7 +648,7 @@ def gradient_chart(
                 ),
                 mark=_(type="point", filled=True, stroke="white", size=70, tooltip=True),
                 encoding=_(
-                    y=y_enc,
+                    # y=y_enc,
                     color=color_enc,
                     opacity=_(condition=_(selection="hover_selection", value=1), value=0),
                 )
