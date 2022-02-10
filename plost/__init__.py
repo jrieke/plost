@@ -594,8 +594,8 @@ def gradient_chart(
     
     # If there's only one area, cycle through the colors for subsequent charts. Only 
     # in streamlit style.
-    # if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
-    #     color = next(color_cycle)
+    if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
+        color = next(color_cycle)
     
     
     # TODO: Raise error if y contains multiple items or color is not a color value.
@@ -619,33 +619,66 @@ def gradient_chart(
     
     # TODO: Make this work with color.
     # TODO: Use color-30 for the actual gradient fill.
-    area_color = next(color_cycle)
-        
-
-    # st.write(color_enc)
+    # area_color = next(color_cycle)
+    
+    
     spec = _(
-        mark=_(
-            type='area', 
-            line=_(color=area_color), 
-            color=_(
-                x1=1,
-                y1=1,
-                x2=1,
-                y2=0,
-                gradient="linear",
-                stops=[
-                    _(offset=0, color="white"),
-                    _(offset=1, color=area_color)
-                ]
-            ), 
-            tooltip=True
-        ),
         encoding=_(
             x=_clean_encoding(data, x),
-            y=y_enc,
-            color=color_enc,
-            opacity=_clean_encoding(data, opacity),
         ),
+        layer=[
+            _(
+                # This is the layer that draws the normal line.
+                mark=_(
+                    type='area', 
+                    line=_(color=color), 
+                    color=_(
+                        x1=1,
+                        y1=1,
+                        x2=1,
+                        y2=0,
+                        gradient="linear",
+                        stops=[
+                            _(offset=0, color="white"),
+                            _(offset=1, color=color)
+                        ]
+                    )
+                ),
+                encoding=_(
+                    y=y_enc,
+                    # color=color_enc,
+                    opacity=_clean_encoding(data, opacity),
+                )
+            ),
+            _(
+                # This layer shows a point on the line when you hover.
+                # It achieves this by drawing points everywhere, but setting them to 
+                # opacity 0, and then setting the hovered point to opacity 1 through a 
+                # selection named "hover_selection".
+                selection=_(
+                    hover_selection=_(
+                        type="single",
+                        on="mouseover",
+                        empty="none",
+                        clear="mouseout",
+                        # TODO: nearest=True doesn't work if there are multiple lines, 
+                        # so manually turning it off for that case.
+                        # I.e. for multiple lines, you need to hover exactly on the line.
+                        # This can be fixed by using params instead of selections, but 
+                        # they are only available in vega lite 5 (streamlit only 
+                        # supports 4).
+                        nearest=True if y_enc.get("field", "") is not "value" else False, 
+                        encodings=["x"],
+                    )
+                ),
+                mark=_(type="point", filled=True, stroke="white", size=70, tooltip=True),
+                encoding=_(
+                    y=y_enc,
+                    color=color_enc,
+                    opacity=_(condition=_(selection="hover_selection", value=1), value=0),
+                )
+            )
+        ],
         selection=_get_selection(pan_zoom),
         config=default_config if style == 'streamlit' else _,
     )
