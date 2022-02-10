@@ -451,13 +451,42 @@ def line_chart(
     )
 
     spec = _(
-        mark=_(type='line', tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x),
-            y=y_enc,
-            color=color_enc,
-            opacity=_clean_encoding(data, opacity),
         ),
+        layer=[
+            _(
+                # This is the layer that draws the normal line.
+                mark=_(type='line'),
+                encoding=_(
+                    y=y_enc,
+                    color=color_enc,
+                    opacity=_clean_encoding(data, opacity),
+                )
+            ),
+            _(
+                # This layer shows a point on the line when you hover.
+                # It achieves this by drawing points everywhere, but setting them to 
+                # opacity 0, and then setting the hovered point to opacity 1 through a 
+                # selection named "hover_selection".
+                selection=_(
+                    hover_selection=_(
+                        type="single",
+                        on="mouseover",
+                        empty="none",
+                        clear="mouseout",
+                        nearest=True,  # TODO: nearest doesn't work if there are multiple lines
+                        encodings=["x"],
+                    )
+                ),
+                mark=_(type="point", filled=True, stroke="white", size=70, tooltip=True),
+                encoding=_(
+                    y=y_enc,
+                    color=color_enc,
+                    opacity=_(condition=_(selection="hover_selection", value=1), value=0),
+                )
+            )
+        ],
         selection=_get_selection(pan_zoom),
         config=default_config if style == 'streamlit' else _,
     )
