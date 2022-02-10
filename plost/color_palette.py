@@ -1,3 +1,5 @@
+from colour import Color
+
 ST_COLOR_PALETTE = {
     "red": {
         "100": "#7d353b",
@@ -114,3 +116,10 @@ def get_color(name):
     """Returns a color from the streamlit color palette, e.g. red-100, as hex."""
     hue, intensity = name.rsplit("-", 1)
     return ST_COLOR_PALETTE[hue][intensity]
+
+
+def change_luminance(hex_color, delta):
+    """Returns a hex color with changed luminance but same hue and saturation."""
+    c = Color(hex_color)
+    c.luminance = min(1, c.luminance + delta)
+    return c.hex

@@ -276,6 +276,8 @@ with st.echo():
         data=datasets['sp500'],
         x='date',
         y='price')
+    
+st.info("☝️ `greadient_chart` does not work with multiple lines right now (i.e. `y` must be a single string)!")
 
 "---"
 

@@ -8,7 +8,7 @@ import numbers
 import streamlit as st
 from itertools import cycle
 
-from .color_palette import get_color
+from .color_palette import get_color, change_luminance
 
 # Syntactic sugar to make VegaLite more fun.
 _ = dict
@@ -16,6 +16,7 @@ _ = dict
 # Config applied to all plots. This sets the style for axes and colors.
 default_color = get_color("blue-70")
 default_color_scheme = [get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")]
+
 default_config = _(
     axis=_(
         labelColor=get_color("gray-70"),
@@ -39,17 +40,6 @@ default_config = _(
     view=_(strokeWidth=0),
     arc=_(fill=default_color),
     area=_(fill=default_color),
-    # area=_(fill=default_color, line=True, color=_(
-    #     x1=1,
-    #     y1=1,
-    #     x2=1,
-    #     y2=0,
-    #     gradient="linear",
-    #     stops=[
-    #         _(offset=0, color="white"),
-    #         _(offset=1, color="green")
-    #     ],
-    # )),
     line=_(stroke=default_color),
     path=_(stroke=default_color),
     rect=_(fill=default_color),
@@ -621,6 +611,8 @@ def gradient_chart(
     # TODO: Use color-30 for the actual gradient fill.
     # area_color = next(color_cycle)
     
+    # TODO: Make this work if color is not defined but the default color is used.
+    gradient_light_color = change_luminance(color, 0.5)
     
     spec = _(
         encoding=_(
@@ -640,7 +632,7 @@ def gradient_chart(
                         gradient="linear",
                         stops=[
                             _(offset=0, color="white"),
-                            _(offset=1, color=color)
+                            _(offset=1, color=gradient_light_color)
                         ]
                     )
                 ),
