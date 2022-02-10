@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import plost
+import vega_datasets
 
 st.set_page_config(page_title='Plost', page_icon=':tomato:')
 
@@ -272,9 +273,9 @@ with st.expander('Documentation'):
 
 with st.echo():
     plost.gradient_chart(
-        data=datasets['rand'],
-        x='a',
-        y='b')
+        data=datasets['sp500'],
+        x='date',
+        y='price')
 
 "---"
 
