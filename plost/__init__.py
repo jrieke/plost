@@ -17,95 +17,62 @@ _ = dict
 default_color = get_color("blue-70")
 default_color_scheme = [get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")]
 
-vertical_config = _(
-    axis=_(
-        labelColor=get_color("gray-70"),
-        tickColor=get_color("gray-30"),
-        gridColor=get_color("gray-30"),
-        domainColor=get_color("gray-30"),
-        titleFontWeight=600,
-        titlePadding=10,
-        labelPadding=5,
-    ),
-    axisX=_(
-        grid=False,
-        domain=True,
-        ticks=True,
-    ),
-    axisY=_(
-        grid=True,
-        domain=False,
-        ticks=False,
-    ),
-    view=_(strokeWidth=0),
-    arc=_(fill=default_color),
-    area=_(fill=default_color),
-    line=_(stroke=default_color),
-    path=_(stroke=default_color),
-    rect=_(fill=default_color),
-    shape=_(stroke=default_color),
-    symbol=_(fill=default_color),
-    bar=_(fill=default_color),
-    tick=_(fill=default_color),
-    circle=_(fill=default_color),
-    range=_(
-        category=default_color_scheme,
-        # TODO: Define continuous color schemes using a function as in 
-        #   https://vega.github.io/vega/docs/schemes/
-        # ordinal=_(scheme="greens"),
-        # ramp=_(scheme="greens"),
-    ),
-)
+
+def _parse_config(config, grid="horizontal"):
+    if config is None:  # use Vega-Lite's defaults
+        return {} 
+    elif config == 'streamlit':  # use a custom config
+        config = _(
+            axis=_(
+                labelColor=get_color("gray-70"),
+                tickColor=get_color("gray-30"),
+                gridColor=get_color("gray-30"),
+                domainColor=get_color("gray-30"),
+                titleFontWeight=600,
+                titlePadding=10,
+                labelPadding=5,
+            ),
+            view=_(strokeWidth=0),
+            arc=_(fill=default_color),
+            area=_(fill=default_color),
+            line=_(stroke=default_color),
+            path=_(stroke=default_color),
+            rect=_(fill=default_color),
+            shape=_(stroke=default_color),
+            symbol=_(fill=default_color),
+            bar=_(fill=default_color),
+            tick=_(fill=default_color),
+            circle=_(fill=default_color),
+            range=_(
+                category=default_color_scheme,
+                # TODO: Define continuous color schemes using a function as in 
+                #   https://vega.github.io/vega/docs/schemes/
+                # ordinal=_(scheme="greens"),
+                # ramp=_(scheme="greens"),
+            ),
+        )
+        
+        if grid == "horizontal":
+            config["axisX"] =_(grid=False, domain=True, ticks=True)
+            config["axisY"] =_(grid=True, domain=False, ticks=False)
+        elif grid == "vertical":
+            config["axisX"] =_(grid=True, domain=False, ticks=False)
+            config["axisY"] =_(grid=False, domain=True, ticks=True)
+        elif grid == "both":
+            config["axisX"] =_(grid=True, domain=True, ticks=True)
+            config["axisY"] =_(grid=True, domain=True, ticks=True)
+        elif grid == "none":
+            config["axisX"] =_(grid=False, domain=True, ticks=True)
+            config["axisY"] =_(grid=False, domain=True, ticks=True)
+        else:
+            raise ValueError("grid must be one of 'horizontal', 'vertical', 'both', or 'none'")
+        
+        return config
+    else:  # try to use config given by user
+        return config
+        
 color_cycle = cycle([get_color("blue-70"), get_color("teal-70"), get_color("violet-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")])
 
-# Config for horizonntal plots, e.g. horizontal bar charts.
-horizontal_config = vertical_config.copy()
-horizontal_config.update(
-    _(
-        axisX=_(
-            grid=True,
-            domain=False,
-            ticks=False,
-        ),
-        axisY=_(
-            grid=False,
-            domain=True,
-            ticks=True,
-        ),
-    )
-)
-
-both_config = vertical_config.copy()
-both_config.update(
-    _(
-        axisX=_(
-            grid=True,
-            domain=True,
-            ticks=True,
-        ),
-        axisY=_(
-            grid=True,
-            domain=True,
-            ticks=True,
-        ),
-    )
-)
-
-no_grid_config = vertical_config.copy()
-no_grid_config.update(
-    _(
-        axisX=_(
-            grid=False,
-            domain=True,
-            ticks=True,
-        ),
-        axisY=_(
-            grid=False,
-            domain=True,
-            ticks=True,
-        ),
-    )
-)
 
 def _clean_encoding(data, enc, **kwargs):
     if isinstance(enc, str):
@@ -357,7 +324,7 @@ def line_chart(
         legend='bottom',
         pan_zoom='both',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw a line chart.
 
@@ -416,16 +383,16 @@ def line_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
     
     # If there's only one line, cycle through the colors for subsequent charts. Only 
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
+    if (isinstance(y, str) or len(y) == 1) and not color and config == 'streamlit':
         color = next(color_cycle)
         
     if color:
@@ -489,7 +456,7 @@ def line_chart(
             )
         ],
         selection=_get_selection(pan_zoom),
-        config=vertical_config if style == 'streamlit' else _,
+        config=_parse_config(config),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -515,7 +482,7 @@ def gradient_chart(
         legend='bottom',
         pan_zoom='both',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw a gradient chart. Only works for a single column of data.
 
@@ -575,16 +542,16 @@ def gradient_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
     
     # If there's only one area, cycle through the colors for subsequent charts. Only 
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
+    if (isinstance(y, str) or len(y) == 1) and not color and config == 'streamlit':
         color = next(color_cycle)
     
     
@@ -672,7 +639,7 @@ def gradient_chart(
             )
         ],
         selection=_get_selection(pan_zoom),
-        config=vertical_config if style == 'streamlit' else _,
+        config=_parse_config(config),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -699,7 +666,7 @@ def area_chart(
         legend='bottom',
         pan_zoom='both',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw an area chart.
 
@@ -762,17 +729,17 @@ def area_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
     
     # If there's only one area, cycle through the colors for subsequent charts. Only 
     # in streamlit style.
-    # if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
-    #     color = next(color_cycle)
+    if (isinstance(y, str) or len(y) == 1) and not color and config == 'streamlit':
+        color = next(color_cycle)
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
@@ -800,7 +767,7 @@ def area_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
-        config=vertical_config if style == 'streamlit' else _,
+        config=_parse_config(config)
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -827,7 +794,7 @@ def bar_chart(
         legend='bottom',
         pan_zoom=None,
         use_container_width=False,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw a bar chart.
 
@@ -875,9 +842,9 @@ def bar_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
     x_enc = _clean_encoding(data, bar, title=None)
     legend = _get_legend_dict(legend)
@@ -885,7 +852,7 @@ def bar_chart(
 
     # If there's only one color of bars, cycle through the colors for subsequent charts. 
     # Only in streamlit style.
-    if not color and style == 'streamlit' and stack != "normalize":
+    if not color and config == 'streamlit' and stack != "normalize":
         color = next(color_cycle)
 
     if color:
@@ -920,10 +887,9 @@ def bar_chart(
         x_enc, y_enc = y_enc, x_enc
         row_enc, column_enc = column_enc, row_enc
         use_container_width = True
-        config = horizontal_config if style == "streamlit" else _
-            
+        config = _parse_config(config, 'vertical')
     else:
-        config = vertical_config if style == "streamlit" else _
+        config = _parse_config(config, 'horizontal')
 
     meta = _(
         data=data,
@@ -975,7 +941,7 @@ def scatter_chart(
         legend='right',
         pan_zoom='both',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw a scatter-plot chart.
 
@@ -1041,9 +1007,9 @@ def scatter_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, size, opacity)
@@ -1065,7 +1031,7 @@ def scatter_chart(
             opacity=_clean_encoding(data, opacity, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
-        config=both_config if style == 'streamlit' else _,
+        config=_parse_config(config, "both")
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1082,7 +1048,7 @@ def _pie_spec(
         theta,
         color,
         legend,
-        style,
+        config,
     ):
     return _(
         mark=_(type='arc', tooltip=True),
@@ -1091,7 +1057,7 @@ def _pie_spec(
             theta=_clean_encoding(data, theta),
             color=_clean_encoding(data, color, title=None, legend=_get_legend_dict(legend)),
         ),
-        config=vertical_config if style == 'streamlit' else _,
+        config=_parse_config(config, "none")
     )
 
 
@@ -1104,7 +1070,7 @@ def pie_chart(
         title=None,
         legend='right',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw a pie chart.
 
@@ -1130,9 +1096,9 @@ def pie_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
 
     meta = _(
@@ -1147,7 +1113,7 @@ def pie_chart(
         theta,
         color,
         legend,
-        style,
+        config,
     )
 
     spec.update(meta)
@@ -1164,7 +1130,7 @@ def donut_chart(
         title=None,
         legend='right',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw a donut chart.
 
@@ -1190,9 +1156,9 @@ def donut_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
 
     meta = _(
@@ -1207,7 +1173,7 @@ def donut_chart(
         theta,
         color,
         legend,
-        style,
+        config,
     )
 
     if height:
@@ -1238,7 +1204,7 @@ def event_chart(
         legend='bottom',
         pan_zoom='both',
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Draw an event chart.
 
@@ -1305,9 +1271,9 @@ def event_chart(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
 
     legend = _get_legend_dict(legend)
@@ -1329,7 +1295,7 @@ def event_chart(
             opacity=_clean_encoding(data, opacity, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
-        config=horizontal_config if style == 'streamlit' else _
+        config=_parse_config(config, "vertical")
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1356,7 +1322,7 @@ def time_hist(
         legend='bottom',
         pan_zoom=None,
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Calculate and draw a time histogram.
 
@@ -1413,9 +1379,9 @@ def time_hist(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
 
     meta = _(
@@ -1433,7 +1399,7 @@ def time_hist(
             color=_clean_encoding(data, color, aggregate=aggregate, legend=legend)
         ),
         selection=_get_selection(pan_zoom),
-        config=no_grid_config if style == 'streamlit' else _,
+        config=_parse_config(config, "none")
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1458,7 +1424,7 @@ def xy_hist(
         legend='bottom',
         pan_zoom=None,
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Calculate and draw an x-y histogram (i.e. 2D histogram).
 
@@ -1527,9 +1493,9 @@ def xy_hist(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
 
     meta = _(
@@ -1547,7 +1513,7 @@ def xy_hist(
             color=_clean_encoding(data, color, aggregate=aggregate, legend=legend)
         ),
         selection=_get_selection(pan_zoom),
-        config=no_grid_config if style == 'streamlit' else _,
+        config=_parse_config(config, "none")
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1570,7 +1536,7 @@ def hist(
         legend='bottom',
         pan_zoom=None,
         use_container_width=True,
-        style='streamlit',
+        config='streamlit',
     ):
     """Calculate and draw a histogram.
 
@@ -1625,9 +1591,9 @@ def hist(
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
-    style : str
-        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
-        the Vega-Lite's default style.
+    config : str or dict
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        default design, or a custom Vega-Lite config dict.
     """
 
     meta = _(
@@ -1644,7 +1610,7 @@ def hist(
             y=_clean_encoding(data, y, aggregate=aggregate),
         ),
         selection=_get_selection(pan_zoom),
-        config=vertical_config if style == 'streamlit' else _,
+        config=_parse_config(config)
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
