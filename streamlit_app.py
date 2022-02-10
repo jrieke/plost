@@ -216,27 +216,27 @@ _ = dict
 #     ]
 # }
 
-spec = {
-    "width": 500,
-    "data": datasets["seattle_weather"],
-    "selection": {
-        "hover": {
-            "type": "single", 
-            "on": "mouseover", 
-            "empty": "none", 
-            "clear": "mouseout", 
-            "nearest": True,
-            "encodings": ["x"],
-        }
-    },
-    "encoding": {
-        "x": {"field": "date", "type": "temporal"},
-        "y": {"field": "temp_max", "type": "quantitative"},
-    },
-     "mark": {"type": "line", "condition": {"selection": "hover", "type": "point"}},
-}
+# spec = {
+#     "width": 500,
+#     "data": datasets["seattle_weather"],
+#     "selection": {
+#         "hover": {
+#             "type": "single", 
+#             "on": "mouseover", 
+#             "empty": "none", 
+#             "clear": "mouseout", 
+#             "nearest": True,
+#             "encodings": ["x"],
+#         }
+#     },
+#     "encoding": {
+#         "x": {"field": "date", "type": "temporal"},
+#         "y": {"field": "temp_max", "type": "quantitative"},
+#     },
+#      "mark": {"type": "line", "condition": {"selection": "hover", "type": "point"}},
+# }
 
-st.vega_lite_chart(spec)
+# st.vega_lite_chart(spec)
 
 
 ###
