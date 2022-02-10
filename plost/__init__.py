@@ -54,9 +54,9 @@ def _parse_config(config, grid="horizontal"):
         
         if grid == "horizontal":
             config["axisX"] =_(grid=False, domain=True, ticks=True)
-            config["axisY"] =_(grid=True, domain=False, ticks=False)
+            config["axisY"] =_(grid=True, domain=False, ticks=True)
         elif grid == "vertical":
-            config["axisX"] =_(grid=True, domain=False, ticks=False)
+            config["axisX"] =_(grid=True, domain=False, ticks=True)
             config["axisY"] =_(grid=False, domain=True, ticks=True)
         elif grid == "both":
             config["axisX"] =_(grid=True, domain=True, ticks=True)
