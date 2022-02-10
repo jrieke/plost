@@ -325,7 +325,8 @@ def _add_annotations(spec, x_annot, y_annot):
             layer=[
                 spec,
                 *annotation_layers,
-            ]
+            ],
+            config=spec.get('config', {}),
         )
 
     return spec
