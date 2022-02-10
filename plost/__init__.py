@@ -486,7 +486,7 @@ def line_chart(
                         # This can be fixed by using params instead of selections, but 
                         # they are only available in vega lite 5 (streamlit only 
                         # supports 4).
-                        nearest=True if y_enc.get("field", "") is not "value" else False,  # TODO: nearest doesn't work if there are multiple lines
+                        nearest=True if y_enc.get("field", "") is not "value" else False, 
                         encodings=["x"],
                     )
                 ),
@@ -498,6 +498,154 @@ def line_chart(
                 )
             )
         ],
+        selection=_get_selection(pan_zoom),
+        config=default_config if style == 'streamlit' else _,
+    )
+
+    spec = _add_annotations(spec, x_annot, y_annot)
+    spec.update(meta)
+
+    if pan_zoom == 'minimap':
+        spec = _add_minimap(spec, ['x'], 'bottom')
+
+    st.vega_lite_chart(spec, use_container_width=use_container_width)
+
+
+def gradient_chart(
+        data,
+        x,
+        y,
+        color=None,
+        opacity=None,
+        x_annot=None,
+        y_annot=None,
+        width=None,
+        height=None,
+        title=None,
+        legend='bottom',
+        pan_zoom='both',
+        use_container_width=True,
+        style='streamlit',
+    ):
+    """Draw a gradient chart. Only works for a single column of data.
+
+    Parameters
+    ----------
+    data : DataFrame
+    x : str or dict
+        Column name to use for the x axis, or Vega-Lite dict for the x encoding.
+        See https://vega.github.io/vega-lite/docs/encoding.html#position-datum-def.
+        Also supports Altair-style shorthands, like "foo:T" for temporal. See
+        https://altair-viz.github.io/user_guide/encoding.html#encoding-data-types.
+    y : str or list of str or dict
+        Column name to use for the y axis, or Vega-Lite dict for the y encoding.
+        If a list of strings, draws several series on the same chart by melting your wide-format
+        table into a long-format table behind the scenes. If your table is already in long-format,
+        the way to draw multiple series is by using the color parameter instead.
+        See https://vega.github.io/vega-lite/docs/encoding.html#position-datum-def.
+        Also supports Altair-style shorthands, like "foo:T" for temporal. See
+        https://altair-viz.github.io/user_guide/encoding.html#encoding-data-types.
+    color : str or dict or None
+        Column name to use for chart colors, or Vega-Lite dict for the color encoding.
+        May also be a literal value, like "#223344" or "green".
+        None means the default color will be used.
+        Also supports Altair-style shorthands, like "foo:T" for temporal. See
+        https://altair-viz.github.io/user_guide/encoding.html#encoding-data-types.
+    opacity : number or str or dict or None
+        Value to use for the opacity, or column name, or Vega-Lite encoding dict.
+        None means the default opacity (1.0) will be used.
+        Also supports Altair-style shorthands, like "foo:T" for temporal. See
+        https://altair-viz.github.io/user_guide/encoding.html#encoding-data-types.
+    x_annot : dict or list or None
+        Annotations to draw on top the chart, tied to specific X-axis values.
+        Can be specified as a dict or a list:
+            - list style: [x_value_1, x_value_2, ...]
+            - dict style: {x_value_1: label_1, x_value_2: label_2, ...}
+    y_annot : dict or list or None
+        Annotations to draw on top the chart, tied to specific Y-axis values.
+        Can be specified as a dict or a list:
+            - list style: [y_value_1, y_value_2, ...]
+            - dict style: {y_value_1: label_1, y_value_2: label_2, ...}
+    width : number or None
+        Chart width in pixels or None for default. See also, use_container_width.
+    height : number or None
+        Chart height in pixels, or None for default.
+    title : str or None
+        Chart title, or None for no title.
+    legend : str or None
+        Legend orientation: 'top', 'left', 'bottom', 'right', etc. See Vega-Lite docs
+        for more. To hide, use None.
+    pan_zoom : str or None
+        Specify the method for panning and zooming the chart, if any. Allowed values:
+            - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'pan': drag canvas to pan.
+            - 'zoom': scroll with mouse to zoom.
+            - 'minimap': drag onto minimap to select viewport area.
+            - None: chart will not be pannable/zoomable.
+    use_container_width : bool
+        If True, sets the chart to use all available space. This takes precedence over the width
+        parameter.
+    style : str
+        Style of the chart. 'streamlit' for a custom, modern style or 'vega' for 
+        the Vega-Lite's default style.
+    """
+    legend = _get_legend_dict(legend)
+    melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
+    
+    # If there's only one area, cycle through the colors for subsequent charts. Only 
+    # in streamlit style.
+    # if (isinstance(y, str) or len(y) == 1) and not color and style == 'streamlit':
+    #     color = next(color_cycle)
+    
+    
+    # TODO: Raise error if y contains multiple items or color is not a color value.
+
+    if color:
+        color_enc = _clean_encoding(data, color, legend=legend)
+
+    # if stack is not None:
+    #     if stack is True:
+    #         y_enc['stack'] = 'zero'
+    #     else:
+    #         y_enc['stack'] = stack
+
+    meta = _(
+        data=data,
+        width=width,
+        height=height,
+        title=title,
+    )
+    
+    
+    # TODO: Make this work with color.
+    # TODO: Use color-30 for the actual gradient fill.
+    area_color = next(color_cycle)
+        
+
+    # st.write(color_enc)
+    spec = _(
+        mark=_(
+            type='area', 
+            line=_(color=area_color), 
+            color=_(
+                x1=1,
+                y1=1,
+                x2=1,
+                y2=0,
+                gradient="linear",
+                stops=[
+                    _(offset=0, color="white"),
+                    _(offset=1, color=area_color)
+                ]
+            ), 
+            tooltip=True
+        ),
+        encoding=_(
+            x=_clean_encoding(data, x),
+            y=y_enc,
+            color=color_enc,
+            opacity=_clean_encoding(data, opacity),
+        ),
         selection=_get_selection(pan_zoom),
         config=default_config if style == 'streamlit' else _,
     )

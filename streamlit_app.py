@@ -161,6 +161,85 @@ Now let's take this data and go _plost_ some _plosts_!
 ## The basics
 """
 
+### SCRATCHPAD FROM JOHANNES
+_ = dict
+# spec = {
+#     "width": 500,
+#     "data": datasets["seattle_weather"],
+#     "encoding": {"x": {"field": "date", "type": "temporal"}},
+#     "layer": [
+#         {
+#             "encoding": {
+#                 "y": {"field": "temp_max", "type": "quantitative"},
+#             },
+#             "mark": "line",
+#         },
+#         {
+#             "selection": {
+#                 "paintbrush": {
+#                     "type": "single", 
+#                     "on": "mouseover", 
+#                     "empty": "none", 
+#                     "clear": "mouseout", 
+#                     "nearest": True,
+#                     "encodings": ["x"],
+#                 }
+#             },
+#             "mark": {"type": "point", "filled": True, "stroke": "white", "size": 70, "tooltip": True},
+#             "encoding": {
+#                 "y": {"field": "temp_max", "type": "quantitative"},
+#                 "opacity": {
+#                     # "condition": {
+#                     #     "param": "hover",
+#                     #     "empty": False,
+#                     #     "value": "black"
+#                     # },
+#                     "condition": {
+#                         "selection": "paintbrush",
+#                         "value": 1
+#                     },
+#                     "value": 0
+#                 },
+#             },
+#             # "params": [{
+#             #     "name": "hover",
+#             #     "select": {
+#             #         "type": "point",
+#             #         # "fields": ["date"],
+#             #         # "nearest": True,
+#             #         "on": "mouseover",
+#             #         # "clear": "mouseout"
+#             #     }
+#             # }]
+#         }
+#     ]
+# }
+
+spec = {
+    "width": 500,
+    "data": datasets["seattle_weather"],
+    "selection": {
+        "hover": {
+            "type": "single", 
+            "on": "mouseover", 
+            "empty": "none", 
+            "clear": "mouseout", 
+            "nearest": True,
+            "encodings": ["x"],
+        }
+    },
+    "encoding": {
+        "x": {"field": "date", "type": "temporal"},
+        "y": {"field": "temp_max", "type": "quantitative"},
+    },
+     "mark": {"type": "line", "condition": {"selection": "hover", "type": "point"}},
+}
+
+st.vega_lite_chart(spec)
+
+
+###
+
 "### line_chart()"
 
 with st.expander('Documentation'):
@@ -180,23 +259,22 @@ with st.echo():
     plost.line_chart(
         data=datasets['seattle_weather'],
         x='date',
-        y='temp_max')
-
-""
-
-with st.echo():
-    plost.line_chart(
-        data=datasets['seattle_weather'],
-        x='date',
-        y='temp_max')
-
-""
-
-with st.echo():
-    plost.line_chart(
-        data=datasets['seattle_weather'],
-        x='date',
         y=('temp_max', 'temp_min'))
+    
+"---"    
+    
+"### gradient_chart()"
+
+with st.expander('Documentation'):
+    st.write(plost.gradient_chart)
+
+""
+
+with st.echo():
+    plost.gradient_chart(
+        data=datasets['rand'],
+        x='a',
+        y='b')
 
 "---"
 
