@@ -285,7 +285,7 @@ with st.expander("Documentation"):
 ""
 
 with st.echo():
-    plost.area_chart(data=datasets["rand"], x="a", y="b")
+    plost.area_chart(data=datasets["rand"], x="a", y="b", pan_zoom="both-horizontal")
 
 ""
 
