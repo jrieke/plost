@@ -122,5 +122,6 @@ def increase_luminance(hex_color):
     """Returns a hex color with increased luminance but same hue and saturation."""
     c = Color(hex_color)
     # Halfway between the original color and white.
+    # Can't increase by fixed amount, otherwise very light colors would become white.
     c.luminance += 0.7 * (1 - c.luminance)
     return c.hex
