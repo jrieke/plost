@@ -214,11 +214,15 @@ def _get_selection(pan_zoom):
         type="interval",
         bind="scales",
     )
+    if pan_zoom.endswith("horizontal"):
+        selection["encodings"] = ["x"]
+    elif pan_zoom.endswith("vertical"):
+        selection["encodings"] = ["y"]
 
-    if pan_zoom == "pan":
+    if pan_zoom.startswith("pan"):
         selection["zoom"] = False
 
-    if pan_zoom == "zoom":
+    if pan_zoom.startswith("zoom"):
         selection["translate"] = False
 
     return _(foo=selection)
@@ -417,8 +421,14 @@ def line_chart(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
             - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
@@ -506,7 +516,7 @@ def line_chart(
         ],
         config=_parse_config(config),
     )
-    
+
     # Need to add pan_zoom selection to the selection for hovering.
     selection = _get_selection(pan_zoom)
     if selection:
@@ -588,8 +598,14 @@ def gradient_chart(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
             - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
@@ -698,12 +714,11 @@ def gradient_chart(
         # selection=_get_selection(pan_zoom),
         config=_parse_config(config),
     )
-    
+
     # Need to add pan_zoom selection to the selection for hovering.
     selection = _get_selection(pan_zoom)
     if selection:
         spec["layer"][1]["selection"].update(selection)
-
 
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
@@ -785,8 +800,14 @@ def area_chart(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
             - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
@@ -898,8 +919,14 @@ def bar_chart(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
             - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
@@ -1063,8 +1090,14 @@ def scatter_chart(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
             - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
@@ -1329,8 +1362,14 @@ def event_chart(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
             - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
@@ -1437,9 +1476,15 @@ def time_hist(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
-            - 'minimap': Not supported for histograms.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
+            - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
@@ -1563,9 +1608,15 @@ def xy_hist(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
-            - 'minimap': Not supported for histograms.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
+            - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
@@ -1661,9 +1712,15 @@ def hist(
     pan_zoom : str or None
         Specify the method for panning and zooming the chart, if any. Allowed values:
             - 'both': drag canvas to pan, use scroll with mouse to zoom.
+            - 'both-horizontal': same as 'both' but only in horizontal direction.
+            - 'both-vertical': same as 'both' but only in vertical direction.
             - 'pan': drag canvas to pan.
+            - 'pan-horizontal': same as 'pan' but only in horizontal direction.
+            - 'pan-vertical': same as 'pan' but only in vertical direction.
             - 'zoom': scroll with mouse to zoom.
-            - 'minimap': Not supported for histograms.
+            - 'zoom-horizontal': same as 'zoom' but only in horizontal direction.
+            - 'zoom-vertical': same as 'zoom' but only in vertical direction.
+            - 'minimap': drag onto minimap to select viewport area.
             - None: chart will not be pannable/zoomable.
     use_container_width : bool
         If True, sets the chart to use all available space. This takes precedence over the width
