@@ -798,29 +798,9 @@ def area_chart(
         title=title,
     )
     
-    if style == 'streamlit' and color_enc is None:
-        area_color = next(color_cycle)
-        # TODO: Use color-30 for the actual gradient fill.
-        mark = _(type='area', line=_(color=area_color), color=_(
-            x1=1,
-            y1=1,
-            x2=1,
-            y2=0,
-            gradient="linear",
-            stops=[
-                _(offset=0, color="white"),
-                _(offset=1, color=area_color)
-            ]), 
-            tooltip=True
-        )
-        
-    else:
-        mark = _(type='area', tooltip=True)
-        
-
     # st.write(color_enc)
     spec = _(
-        mark=mark,
+        mark = _(type='area', tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x),
             y=y_enc,
