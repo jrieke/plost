@@ -14,7 +14,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/tvst/plost",
     packages=["plost"],
-    install_requires=[], # Not including Streamlit here to allow nightlies, etc.
+    install_requires=["colour"], # Not including Streamlit here to allow nightlies, etc.
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
