@@ -118,8 +118,9 @@ def get_color(name):
     return ST_COLOR_PALETTE[hue][intensity]
 
 
-def change_luminance(hex_color, delta):
-    """Returns a hex color with changed luminance but same hue and saturation."""
+def increase_luminance(hex_color):
+    """Returns a hex color with increased luminance but same hue and saturation."""
     c = Color(hex_color)
-    c.luminance = min(1, c.luminance + delta)
+    # Halfway between the original color and white.
+    c.luminance += 0.7 * (1 - c.luminance)
     return c.hex

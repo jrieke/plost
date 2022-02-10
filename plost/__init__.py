@@ -8,7 +8,7 @@ import numbers
 import streamlit as st
 from itertools import cycle
 
-from .color_palette import get_color, change_luminance
+from .color_palette import get_color, increase_luminance
 
 # Syntactic sugar to make VegaLite more fun.
 _ = dict
@@ -578,8 +578,8 @@ def gradient_chart(
     # TODO: Use color-30 for the actual gradient fill.
     # area_color = next(color_cycle)
     
-    # TODO: Make this work if color is not defined but the default color is used.
-    gradient_light_color = change_luminance(color, 0.2)
+    # TODO: Make this work if color is not defined but the default color is used.)
+    gradient_light_color = increase_luminance(color)
     
     spec = _(
         encoding=_(
