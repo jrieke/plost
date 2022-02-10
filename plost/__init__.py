@@ -579,7 +579,7 @@ def gradient_chart(
     # area_color = next(color_cycle)
     
     # TODO: Make this work if color is not defined but the default color is used.
-    gradient_light_color = change_luminance(color, 0.5)
+    gradient_light_color = change_luminance(color, 0.2)
     
     spec = _(
         encoding=_(
