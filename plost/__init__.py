@@ -66,7 +66,7 @@ default_config = _(
         # ramp=_(scheme="greens"),
     ),
 )
-color_cycle = cycle(default_color_scheme)
+color_cycle = cycle([get_color("blue-70"), get_color("teal-70"), get_color("violet-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")])
 
 # Config for horizonntal plots, e.g. horizontal bar charts.
 horizontal_config = default_config.copy()
@@ -440,7 +440,10 @@ def line_chart(
         
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
-        
+    
+    # selection_color_enc = copy.deepcopy(color_enc)
+    # if "legend" in selection_color_enc:
+    #     del selection_color_enc["legend"]        
     # st.write(color_enc)
 
     meta = _(
@@ -449,7 +452,9 @@ def line_chart(
         height=height,
         title=title,
     )
-
+    # st.write(y_enc)
+    # st.write(color_enc)
+    # st.write(selection_color_enc)
     spec = _(
         encoding=_(
             x=_clean_encoding(data, x),
@@ -475,7 +480,13 @@ def line_chart(
                         on="mouseover",
                         empty="none",
                         clear="mouseout",
-                        nearest=True,  # TODO: nearest doesn't work if there are multiple lines
+                        # TODO: nearest=True doesn't work if there are multiple lines, 
+                        # so manually turning it off for that case.
+                        # I.e. for multiple lines, you need to hover exactly on the line.
+                        # This can be fixed by using params instead of selections, but 
+                        # they are only available in vega lite 5 (streamlit only 
+                        # supports 4).
+                        nearest=True if y_enc.get("field", "") is not "value" else False,  # TODO: nearest doesn't work if there are multiple lines
                         encodings=["x"],
                     )
                 ),
