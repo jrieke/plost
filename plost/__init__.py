@@ -17,7 +17,7 @@ _ = dict
 default_color = get_color("blue-70")
 default_color_scheme = [get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")]
 
-default_config = _(
+vertical_config = _(
     axis=_(
         labelColor=get_color("gray-70"),
         tickColor=get_color("gray-30"),
@@ -59,7 +59,7 @@ default_config = _(
 color_cycle = cycle([get_color("blue-70"), get_color("teal-70"), get_color("violet-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")])
 
 # Config for horizonntal plots, e.g. horizontal bar charts.
-horizontal_config = default_config.copy()
+horizontal_config = vertical_config.copy()
 horizontal_config.update(
     _(
         axisX=_(
@@ -75,7 +75,7 @@ horizontal_config.update(
     )
 )
 
-both_config = default_config.copy()
+both_config = vertical_config.copy()
 both_config.update(
     _(
         axisX=_(
@@ -91,7 +91,7 @@ both_config.update(
     )
 )
 
-no_grid_config = default_config.copy()
+no_grid_config = vertical_config.copy()
 no_grid_config.update(
     _(
         axisX=_(
@@ -489,7 +489,7 @@ def line_chart(
             )
         ],
         selection=_get_selection(pan_zoom),
-        config=default_config if style == 'streamlit' else _,
+        config=vertical_config if style == 'streamlit' else _,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -672,7 +672,7 @@ def gradient_chart(
             )
         ],
         selection=_get_selection(pan_zoom),
-        config=default_config if style == 'streamlit' else _,
+        config=vertical_config if style == 'streamlit' else _,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -800,7 +800,7 @@ def area_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
-        config=default_config if style == 'streamlit' else _,
+        config=vertical_config if style == 'streamlit' else _,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -923,7 +923,7 @@ def bar_chart(
         config = horizontal_config if style == "streamlit" else _
             
     else:
-        config = default_config if style == "streamlit" else _
+        config = vertical_config if style == "streamlit" else _
 
     meta = _(
         data=data,
@@ -1091,7 +1091,7 @@ def _pie_spec(
             theta=_clean_encoding(data, theta),
             color=_clean_encoding(data, color, title=None, legend=_get_legend_dict(legend)),
         ),
-        config=default_config if style == 'streamlit' else _,
+        config=vertical_config if style == 'streamlit' else _,
     )
 
 
@@ -1644,7 +1644,7 @@ def hist(
             y=_clean_encoding(data, y, aggregate=aggregate),
         ),
         selection=_get_selection(pan_zoom),
-        config=default_config if style == 'streamlit' else _,
+        config=vertical_config if style == 'streamlit' else _,
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
