@@ -490,7 +490,8 @@ def line_chart(
                         if y_enc.get("field", "") is not "value"
                         else False,
                         encodings=["x"],
-                    )
+                    ),
+                    foo=_get_selection(pan_zoom)["foo"],
                 ),
                 mark=_(
                     type="point", filled=True, stroke="white", size=70, tooltip=True
@@ -504,7 +505,6 @@ def line_chart(
                 ),
             ),
         ],
-        selection=_get_selection(pan_zoom),
         config=_parse_config(config),
     )
 
@@ -677,7 +677,8 @@ def gradient_chart(
                         if y_enc.get("field", "") is not "value"
                         else False,
                         encodings=["x"],
-                    )
+                    ),
+                    foo=_get_selection(pan_zoom)["foo"],
                 ),
                 mark=_(
                     type="point", filled=True, stroke="white", size=70, tooltip=True
@@ -691,7 +692,7 @@ def gradient_chart(
                 ),
             ),
         ],
-        selection=_get_selection(pan_zoom),
+        # selection=_get_selection(pan_zoom),
         config=_parse_config(config),
     )
 
