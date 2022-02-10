@@ -1635,6 +1635,7 @@ def scatter_hist(
         legend='bottom',
         pan_zoom=None,
         use_container_width=True,
+        config='streamlit',
     ):
 
     legend = _get_legend_dict(legend)
@@ -1677,6 +1678,7 @@ def scatter_hist(
         data=data,
         title=title,
         vconcat=[x_hist_spec, _(hconcat=[scatter_spec, y_hist_spec])],
+        config=_parse_config(config, "both")
     )
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
