@@ -15,13 +15,21 @@ _ = dict
 
 # Config applied to all plots. This sets the style for axes and colors.
 default_color = get_color("blue-70")
-default_color_scheme = [get_color("blue-70"), get_color("orange-70"), get_color("green-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")]
+default_color_scheme = [
+    get_color("blue-70"),
+    get_color("orange-70"),
+    get_color("green-70"),
+    get_color("red-70"),
+    get_color("teal-70"),
+    get_color("violet-70"),
+    get_color("cyan-70"),
+]
 
 
 def _parse_config(config, grid="horizontal"):
     if config is None:  # use Vega-Lite's defaults
-        return {} 
-    elif config == 'streamlit':  # use a custom config
+        return {}
+    elif config == "streamlit":  # use a custom config
         config = _(
             axis=_(
                 labelColor=get_color("gray-70"),
@@ -45,39 +53,52 @@ def _parse_config(config, grid="horizontal"):
             circle=_(fill=default_color),
             range=_(
                 category=default_color_scheme,
-                # TODO: Define continuous color schemes using a function as in 
+                # TODO: Define continuous color schemes using a function as in
                 #   https://vega.github.io/vega/docs/schemes/
                 # ordinal=_(scheme="greens"),
                 # ramp=_(scheme="greens"),
             ),
         )
-        
+
         if grid == "horizontal":
-            config["axisX"] =_(grid=False, domain=True, ticks=True)
-            config["axisY"] =_(grid=True, domain=False, ticks=True)
+            config["axisX"] = _(grid=False, domain=True, ticks=True)
+            config["axisY"] = _(grid=True, domain=False, ticks=True)
         elif grid == "vertical":
-            config["axisX"] =_(grid=True, domain=False, ticks=True)
-            config["axisY"] =_(grid=False, domain=True, ticks=True)
+            config["axisX"] = _(grid=True, domain=False, ticks=True)
+            config["axisY"] = _(grid=False, domain=True, ticks=True)
         elif grid == "both":
-            config["axisX"] =_(grid=True, domain=True, ticks=True)
-            config["axisY"] =_(grid=True, domain=True, ticks=True)
+            config["axisX"] = _(grid=True, domain=True, ticks=True)
+            config["axisY"] = _(grid=True, domain=True, ticks=True)
         elif grid == "none":
-            config["axisX"] =_(grid=False, domain=True, ticks=True)
-            config["axisY"] =_(grid=False, domain=True, ticks=True)
+            config["axisX"] = _(grid=False, domain=True, ticks=True)
+            config["axisY"] = _(grid=False, domain=True, ticks=True)
         else:
-            raise ValueError("grid must be one of 'horizontal', 'vertical', 'both', or 'none'")
-        
+            raise ValueError(
+                "grid must be one of 'horizontal', 'vertical', 'both', or 'none'"
+            )
+
         return config
     else:  # try to use config given by user
         return config
-        
-color_cycle = cycle([get_color("blue-70"), get_color("teal-70"), get_color("violet-70"), get_color("red-70"), get_color("teal-70"), get_color("violet-70"), get_color("cyan-70")])
+
+
+color_cycle = cycle(
+    [
+        get_color("blue-70"),
+        get_color("teal-70"),
+        get_color("violet-70"),
+        get_color("red-70"),
+        get_color("teal-70"),
+        get_color("violet-70"),
+        get_color("cyan-70"),
+    ]
+)
 
 
 def _clean_encoding(data, enc, **kwargs):
     if isinstance(enc, str):
-        if 'type' in kwargs:
-            enc_type = kwargs['type']
+        if "type" in kwargs:
+            enc_type = kwargs["type"]
         else:
             enc, enc_type = _guess_string_encoding_type(data, enc)
 
@@ -85,7 +106,7 @@ def _clean_encoding(data, enc, **kwargs):
     if isinstance(enc, str):
         enc = _(
             field=enc,
-            type=kwargs.get('type', enc_type),
+            type=kwargs.get("type", enc_type),
         )
         enc.update(kwargs)
         return enc
@@ -104,16 +125,16 @@ def _clean_encoding(data, enc, **kwargs):
 
 def _guess_string_encoding_type(data, enc):
     # Accept Altair-style shorthands.
-    if enc.endswith(':Q'):
-        return enc[:-2], 'quantitative'
-    elif enc.endswith(':O'):
-        return enc[:-2], 'ordinal'
-    elif enc.endswith(':N'):
-        return enc[:-2], 'nominal'
-    elif enc.endswith(':T'):
-        return enc[:-2], 'temporal'
-    elif enc.endswith(':G'):
-        return enc[:-2], 'geojson'
+    if enc.endswith(":Q"):
+        return enc[:-2], "quantitative"
+    elif enc.endswith(":O"):
+        return enc[:-2], "ordinal"
+    elif enc.endswith(":N"):
+        return enc[:-2], "nominal"
+    elif enc.endswith(":T"):
+        return enc[:-2], "temporal"
+    elif enc.endswith(":G"):
+        return enc[:-2], "geojson"
 
     try:
         dtype = data[enc].dtype.name
@@ -121,18 +142,18 @@ def _guess_string_encoding_type(data, enc):
         # If it's not a column, then maybe it's a value.
         return _(value=enc), None
 
-    if dtype in {'object', 'string', 'bool', 'categorical'}:
-        return enc, 'nominal'
-    elif dtype in {'float64', 'float32', 'int64', 'int32', 'int8', 'string'}:
-        return enc, 'quantitative'
-    elif dtype.startswith('datetime64'):
-        return enc, 'temporal'
+    if dtype in {"object", "string", "bool", "categorical"}:
+        return enc, "nominal"
+    elif dtype in {"float64", "float32", "int64", "int32", "int8", "string"}:
+        return enc, "quantitative"
+    elif dtype.startswith("datetime64"):
+        return enc, "temporal"
 
     return enc, None
 
 
-VAR_NAME = 'variable' # Singular because it makes tooltips nicer
-VALUE_NAME = 'value' # Singular because it makes tooltips nicer
+VAR_NAME = "variable"  # Singular because it makes tooltips nicer
+VALUE_NAME = "value"  # Singular because it makes tooltips nicer
 
 
 def _maybe_melt(data, x, y, legend, *columns_to_keep):
@@ -155,12 +176,16 @@ def _maybe_melt(data, x, y, legend, *columns_to_keep):
         id_vars = list(id_vars) + list(c for c in columns_to_keep if c in data.columns)
 
         if VAR_NAME in data.columns:
-            raise TypeError(f'Data already contains a column called {VAR_NAME}')
+            raise TypeError(f"Data already contains a column called {VAR_NAME}")
         if VALUE_NAME in data.columns:
-            raise TypeError(f'Data already contains a column called {VALUE_NAME}')
+            raise TypeError(f"Data already contains a column called {VALUE_NAME}")
 
         data = data.melt(
-            id_vars=id_vars, value_vars=value_vars, var_name=VAR_NAME, value_name=VALUE_NAME)
+            id_vars=id_vars,
+            value_vars=value_vars,
+            var_name=VAR_NAME,
+            value_name=VALUE_NAME,
+        )
 
         # Don't show titles in axes since they're no longer the original names and make no sense to
         # the user.
@@ -182,19 +207,19 @@ def _as_list_like(x):
 
 
 def _get_selection(pan_zoom):
-    if pan_zoom is None or pan_zoom == 'minimap':
+    if pan_zoom is None or pan_zoom == "minimap":
         return None
 
     selection = _(
-        type='interval',
-        bind='scales',
+        type="interval",
+        bind="scales",
     )
 
-    if pan_zoom == 'pan':
-        selection['zoom'] = False
+    if pan_zoom == "pan":
+        selection["zoom"] = False
 
-    if pan_zoom == 'zoom':
-        selection['translate'] = False
+    if pan_zoom == "zoom":
+        selection["translate"] = False
 
     return _(foo=selection)
 
@@ -209,7 +234,7 @@ _MINI_CHART_SIZE = 50
 
 
 def _add_minimap(orig_spec, encodings, location, filter=False):
-    inner_props = {'layer', 'mark', 'encoding', 'selection', 'width', 'height'}
+    inner_props = {"layer", "mark", "encoding", "selection", "width", "height"}
 
     inner_spec = {k: v for (k, v) in orig_spec.items() if k in inner_props}
     outer_spec = {k: v for (k, v) in orig_spec.items() if k not in inner_props}
@@ -219,14 +244,14 @@ def _add_minimap(orig_spec, encodings, location, filter=False):
 
     minimap_spec = copy.deepcopy(inner_spec)
     # st.vega_lite_chart(**minimap_spec, **outer_spec)
-    
-    # Line chart and gradient chart are made up of layers, where one layer shows the 
-    # actual chart and the 2nd layer shows a point on hover. We want to keep these layers 
-    # in the big chart, but in the minimap we pull out the 1st layer and remove the 
+
+    # Line chart and gradient chart are made up of layers, where one layer shows the
+    # actual chart and the 2nd layer shows a point on hover. We want to keep these layers
+    # in the big chart, but in the minimap we pull out the 1st layer and remove the
     # 2nd layer.
-    if 'layer' in minimap_spec:
-        minimap_spec['mark'] = minimap_spec['layer'][0]['mark']
-        del minimap_spec['layer']
+    if "layer" in minimap_spec:
+        minimap_spec["mark"] = minimap_spec["layer"][0]["mark"]
+        del minimap_spec["layer"]
     # st.write(minimap_spec)
 
     is_2d = False
@@ -234,54 +259,54 @@ def _add_minimap(orig_spec, encodings, location, filter=False):
     if len(encodings) == 2:
         is_2d = True
 
-    if location in {'bottom', 'top'}:
+    if location in {"bottom", "top"}:
         if not is_2d:
-            minimap_spec['height'] = _MINI_CHART_SIZE
-        minimap_spec['encoding']['y']['title'] = None
-        minimap_spec['encoding']['y']['axis'] = None
+            minimap_spec["height"] = _MINI_CHART_SIZE
+        minimap_spec["encoding"]["y"]["title"] = None
+        minimap_spec["encoding"]["y"]["axis"] = None
 
     if filter:
-        minimap_spec['encoding']['y']['title'] = None
-        minimap_spec['encoding']['y']['axis'] = None
-        minimap_spec['encoding']['x']['title'] = None
-        minimap_spec['encoding']['x']['axis'] = None
+        minimap_spec["encoding"]["y"]["title"] = None
+        minimap_spec["encoding"]["y"]["axis"] = None
+        minimap_spec["encoding"]["x"]["title"] = None
+        minimap_spec["encoding"]["x"]["axis"] = None
 
-    if location == 'right':
+    if location == "right":
         if not is_2d:
-            minimap_spec['width'] = _MINI_CHART_SIZE
-        minimap_spec['height'] = _MINI_CHART_SIZE * 5
-        minimap_spec['encoding']['x']['title'] = None
-        minimap_spec['encoding']['x']['axis'] = None
+            minimap_spec["width"] = _MINI_CHART_SIZE
+        minimap_spec["height"] = _MINI_CHART_SIZE * 5
+        minimap_spec["encoding"]["x"]["title"] = None
+        minimap_spec["encoding"]["x"]["axis"] = None
 
     if is_2d:
-        minimap_spec['height'] //= 2
-        minimap_spec['width'] //= 2
-        minimap_spec['encoding']['x']['title'] = None
-        minimap_spec['encoding']['x']['axis'] = None
-        minimap_spec['encoding']['y']['title'] = None
-        minimap_spec['encoding']['y']['axis'] = None
+        minimap_spec["height"] //= 2
+        minimap_spec["width"] //= 2
+        minimap_spec["encoding"]["x"]["title"] = None
+        minimap_spec["encoding"]["x"]["axis"] = None
+        minimap_spec["encoding"]["y"]["title"] = None
+        minimap_spec["encoding"]["y"]["axis"] = None
 
-    minimap_spec['selection'] = _(
-        brush=_(type='interval', encodings=encodings),
+    minimap_spec["selection"] = _(
+        brush=_(type="interval", encodings=encodings),
     )
 
     if filter:
         # Filter data out according to the brush.
-        inner_spec['transform'] = [_(filter=_(selection='brush'))]
+        inner_spec["transform"] = [_(filter=_(selection="brush"))]
     else:
         # Change the scale of differen encodings according to the brush.
         for k in encodings:
-            enc = inner_spec['encoding'][k]
-            enc['scale'] = enc.get('scale', {})
-            enc['scale']['domain'] = _(selection='brush', encoding=k)
-            enc['title'] = None
+            enc = inner_spec["encoding"][k]
+            enc["scale"] = enc.get("scale", {})
+            enc["scale"]["domain"] = _(selection="brush", encoding=k)
+            enc["title"] = None
 
-    if location == 'right':
-        outer_spec['hconcat'] = [inner_spec, minimap_spec]
-    elif location == 'top':
-        outer_spec['vconcat'] = [minimap_spec, inner_spec]
+    if location == "right":
+        outer_spec["hconcat"] = [inner_spec, minimap_spec]
+    elif location == "top":
+        outer_spec["vconcat"] = [minimap_spec, inner_spec]
     else:
-        outer_spec['vconcat'] = [inner_spec, minimap_spec]
+        outer_spec["vconcat"] = [inner_spec, minimap_spec]
 
     return outer_spec
 
@@ -289,8 +314,8 @@ def _add_minimap(orig_spec, encodings, location, filter=False):
 def _add_annotations(spec, x_annot, y_annot):
     annotation_layers = []
 
-    _add_encoding_annotations(annotation_layers, 'x', x_annot)
-    _add_encoding_annotations(annotation_layers, 'y', y_annot)
+    _add_encoding_annotations(annotation_layers, "x", x_annot)
+    _add_encoding_annotations(annotation_layers, "y", y_annot)
 
     if annotation_layers:
         spec = _(
@@ -298,7 +323,7 @@ def _add_annotations(spec, x_annot, y_annot):
                 spec,
                 *annotation_layers,
             ],
-            config=spec.get('config', {}),
+            config=spec.get("config", {}),
         )
 
     return spec
@@ -314,32 +339,34 @@ def _add_encoding_annotations(annotation_layers, encoding, annot):
         annot_iter = ((coord, "") for coord in _as_list_like(annot))
 
     for coord, label in annot_iter:
-        annotation_layers.append(_(
-            mark='rule',
-            encoding={
-                encoding: _(datum=coord),
-                # "size": _(value=120),
-                "tooltip": _(value=f'{label} ({coord})'),
-            },
-        ))
+        annotation_layers.append(
+            _(
+                mark="rule",
+                encoding={
+                    encoding: _(datum=coord),
+                    # "size": _(value=120),
+                    "tooltip": _(value=f"{label} ({coord})"),
+                },
+            )
+        )
 
 
 def line_chart(
-        data,
-        x,
-        y,
-        color=None,
-        opacity=None,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom='both',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    opacity=None,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom="both",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw a line chart.
 
     Parameters
@@ -398,23 +425,23 @@ def line_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
-    
-    # If there's only one line, cycle through the colors for subsequent charts. Only 
+
+    # If there's only one line, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and config == 'streamlit':
+    if (isinstance(y, str) or len(y) == 1) and not color and config == "streamlit":
         color = next(color_cycle)
-        
+
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
-    
+
     # selection_color_enc = copy.deepcopy(color_enc)
     # if "legend" in selection_color_enc:
-    #     del selection_color_enc["legend"]        
+    #     del selection_color_enc["legend"]
     # st.write(color_enc)
 
     meta = _(
@@ -436,7 +463,7 @@ def line_chart(
         layer=[
             _(
                 # This is the layer that draws the normal line.
-                mark=_(type='line'),
+                mark=_(type="line"),
                 # encoding=_(
                 #     color=color_enc,
                 #     opacity=_clean_encoding(data, opacity),
@@ -444,8 +471,8 @@ def line_chart(
             ),
             _(
                 # This layer shows a point on the line when you hover.
-                # It achieves this by drawing points everywhere, but setting them to 
-                # opacity 0, and then setting the hovered point to opacity 1 through a 
+                # It achieves this by drawing points everywhere, but setting them to
+                # opacity 0, and then setting the hovered point to opacity 1 through a
                 # selection named "hover_selection".
                 selection=_(
                     hover_selection=_(
@@ -453,23 +480,29 @@ def line_chart(
                         on="mouseover",
                         empty="none",
                         clear="mouseout",
-                        # TODO: nearest=True doesn't work if there are multiple lines, 
+                        # TODO: nearest=True doesn't work if there are multiple lines,
                         # so manually turning it off for that case.
                         # I.e. for multiple lines, you need to hover exactly on the line.
-                        # This can be fixed by using params instead of selections, but 
-                        # they are only available in vega lite 5 (streamlit only 
+                        # This can be fixed by using params instead of selections, but
+                        # they are only available in vega lite 5 (streamlit only
                         # supports 4).
-                        nearest=True if y_enc.get("field", "") is not "value" else False, 
+                        nearest=True
+                        if y_enc.get("field", "") is not "value"
+                        else False,
                         encodings=["x"],
                     )
                 ),
-                mark=_(type="point", filled=True, stroke="white", size=70, tooltip=True),
+                mark=_(
+                    type="point", filled=True, stroke="white", size=70, tooltip=True
+                ),
                 encoding=_(
                     # y=y_enc,
                     # color=color_enc,
-                    opacity=_(condition=_(selection="hover_selection", value=1), value=0),
-                )
-            )
+                    opacity=_(
+                        condition=_(selection="hover_selection", value=1), value=0
+                    ),
+                ),
+            ),
         ],
         selection=_get_selection(pan_zoom),
         config=_parse_config(config),
@@ -478,28 +511,28 @@ def line_chart(
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
 
-    if pan_zoom == 'minimap':
-        spec = _add_minimap(spec, ['x'], 'bottom')
+    if pan_zoom == "minimap":
+        spec = _add_minimap(spec, ["x"], "bottom")
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
 
 
 def gradient_chart(
-        data,
-        x,
-        y,
-        color=None,
-        opacity=None,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom='both',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    opacity=None,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom="both",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw a gradient chart. Only works for a single column of data.
 
     Parameters
@@ -559,18 +592,17 @@ def gradient_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
-    
-    # If there's only one area, cycle through the colors for subsequent charts. Only 
+
+    # If there's only one area, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and config == 'streamlit':
+    if (isinstance(y, str) or len(y) == 1) and not color and config == "streamlit":
         color = next(color_cycle)
-    
-    
+
     # TODO: Raise error if y contains multiple items or color is not a color value.
 
     if color:
@@ -588,15 +620,14 @@ def gradient_chart(
         height=height,
         title=title,
     )
-    
-    
+
     # TODO: Make this work with color.
     # TODO: Use color-30 for the actual gradient fill.
     # area_color = next(color_cycle)
-    
+
     # TODO: Make this work if color is not defined but the default color is used.)
     gradient_light_color = increase_luminance(color)
-    
+
     spec = _(
         encoding=_(
             x=_clean_encoding(data, x),
@@ -607,8 +638,8 @@ def gradient_chart(
             _(
                 # This is the layer that draws the normal line.
                 mark=_(
-                    type='area', 
-                    line=_(color=color), 
+                    type="area",
+                    line=_(color=color),
                     color=_(
                         x1=1,
                         y1=1,
@@ -617,9 +648,9 @@ def gradient_chart(
                         gradient="linear",
                         stops=[
                             _(offset=0, color="white"),
-                            _(offset=1, color=gradient_light_color)
-                        ]
-                    )
+                            _(offset=1, color=gradient_light_color),
+                        ],
+                    ),
                 ),
                 # encoding=_(
                 #     # color=color_enc,
@@ -627,8 +658,8 @@ def gradient_chart(
             ),
             _(
                 # This layer shows a point on the line when you hover.
-                # It achieves this by drawing points everywhere, but setting them to 
-                # opacity 0, and then setting the hovered point to opacity 1 through a 
+                # It achieves this by drawing points everywhere, but setting them to
+                # opacity 0, and then setting the hovered point to opacity 1 through a
                 # selection named "hover_selection".
                 selection=_(
                     hover_selection=_(
@@ -636,23 +667,29 @@ def gradient_chart(
                         on="mouseover",
                         empty="none",
                         clear="mouseout",
-                        # TODO: nearest=True doesn't work if there are multiple lines, 
+                        # TODO: nearest=True doesn't work if there are multiple lines,
                         # so manually turning it off for that case.
                         # I.e. for multiple lines, you need to hover exactly on the line.
-                        # This can be fixed by using params instead of selections, but 
-                        # they are only available in vega lite 5 (streamlit only 
+                        # This can be fixed by using params instead of selections, but
+                        # they are only available in vega lite 5 (streamlit only
                         # supports 4).
-                        nearest=True if y_enc.get("field", "") is not "value" else False, 
+                        nearest=True
+                        if y_enc.get("field", "") is not "value"
+                        else False,
                         encodings=["x"],
                     )
                 ),
-                mark=_(type="point", filled=True, stroke="white", size=70, tooltip=True),
+                mark=_(
+                    type="point", filled=True, stroke="white", size=70, tooltip=True
+                ),
                 encoding=_(
                     # y=y_enc,
                     color=color_enc,
-                    opacity=_(condition=_(selection="hover_selection", value=1), value=0),
-                )
-            )
+                    opacity=_(
+                        condition=_(selection="hover_selection", value=1), value=0
+                    ),
+                ),
+            ),
         ],
         selection=_get_selection(pan_zoom),
         config=_parse_config(config),
@@ -661,29 +698,29 @@ def gradient_chart(
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
 
-    if pan_zoom == 'minimap':
-        spec = _add_minimap(spec, ['x'], 'bottom')
+    if pan_zoom == "minimap":
+        spec = _add_minimap(spec, ["x"], "bottom")
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
 
 
 def area_chart(
-        data,
-        x,
-        y,
-        color=None,
-        opacity=None,
-        stack=True,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom='both',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    opacity=None,
+    stack=True,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom="both",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw an area chart.
 
     Parameters
@@ -746,15 +783,15 @@ def area_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
-    
-    # If there's only one area, cycle through the colors for subsequent charts. Only 
+
+    # If there's only one area, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and config == 'streamlit':
+    if (isinstance(y, str) or len(y) == 1) and not color and config == "streamlit":
         color = next(color_cycle)
 
     if color:
@@ -762,9 +799,9 @@ def area_chart(
 
     if stack is not None:
         if stack is True:
-            y_enc['stack'] = 'zero'
+            y_enc["stack"] = "zero"
         else:
-            y_enc['stack'] = stack
+            y_enc["stack"] = stack
 
     meta = _(
         data=data,
@@ -772,10 +809,10 @@ def area_chart(
         height=height,
         title=title,
     )
-    
+
     # st.write(color_enc)
     spec = _(
-        mark = _(type='area', tooltip=True),
+        mark=_(type="area", tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x),
             y=y_enc,
@@ -783,35 +820,35 @@ def area_chart(
             opacity=_clean_encoding(data, opacity),
         ),
         selection=_get_selection(pan_zoom),
-        config=_parse_config(config)
+        config=_parse_config(config),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
 
-    if pan_zoom == 'minimap':
-        spec = _add_minimap(spec, ['x'], 'bottom')
+    if pan_zoom == "minimap":
+        spec = _add_minimap(spec, ["x"], "bottom")
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
 
 
 def bar_chart(
-        data,
-        bar,
-        value,
-        color=None,
-        opacity=None,
-        group=None,
-        stack=True,
-        direction='vertical',
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom=None,
-        use_container_width=False,
-        config='streamlit',
-    ):
+    data,
+    bar,
+    value,
+    color=None,
+    opacity=None,
+    group=None,
+    stack=True,
+    direction="vertical",
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom=None,
+    use_container_width=False,
+    config="streamlit",
+):
     """Draw a bar chart.
 
     Parameters
@@ -859,20 +896,20 @@ def bar_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
     x_enc = _clean_encoding(data, bar, title=None)
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, bar, value, legend, opacity)
 
-    # If there's only one color of bars, cycle through the colors for subsequent charts. 
+    # If there's only one color of bars, cycle through the colors for subsequent charts.
     # Only in streamlit style.
-    if not color and config == 'streamlit' and stack != "normalize":
+    if not color and config == "streamlit" and stack != "normalize":
         color = next(color_cycle)
 
     if color:
-        if color == 'value': # 'value', as in the value= arg.
+        if color == "value":  # 'value', as in the value= arg.
             color = VAR_NAME
         color_enc = _clean_encoding(data, color, legend=legend)
 
@@ -886,26 +923,26 @@ def bar_chart(
             column_enc = x_enc
             x_enc = color_enc
         else:
-            if group == 'value': # 'value', as in the value= arg.
+            if group == "value":  # 'value', as in the value= arg.
                 group = VAR_NAME
             column_enc = _clean_encoding(data, group, title=None)
 
-        column_enc['spacing'] = 10
+        column_enc["spacing"] = 10
 
     if stack:
         if stack is True:
-            y_enc['stack'] = 'zero'
+            y_enc["stack"] = "zero"
 
         else:
-            y_enc['stack'] = stack
+            y_enc["stack"] = stack
 
-    if direction == 'horizontal':
+    if direction == "horizontal":
         x_enc, y_enc = y_enc, x_enc
         row_enc, column_enc = column_enc, row_enc
         use_container_width = True
-        config = _parse_config(config, 'vertical')
+        config = _parse_config(config, "vertical")
     else:
-        config = _parse_config(config, 'horizontal')
+        config = _parse_config(config, "horizontal")
 
     meta = _(
         data=data,
@@ -915,7 +952,7 @@ def bar_chart(
     )
 
     spec = _(
-        mark=_(type='bar', tooltip=True),
+        mark=_(type="bar", tooltip=True),
         encoding=_(
             x=x_enc,
             y=y_enc,
@@ -929,13 +966,13 @@ def bar_chart(
 
     spec.update(meta)
 
-    if pan_zoom == 'minimap':
-        if direction == 'horizontal':
-            enc = ['y']
-            loc = 'right'
+    if pan_zoom == "minimap":
+        if direction == "horizontal":
+            enc = ["y"]
+            loc = "right"
         else:
-            enc = ['x']
-            loc = 'top'
+            enc = ["x"]
+            loc = "top"
 
         spec = _add_minimap(spec, enc, loc, filter=True)
 
@@ -943,22 +980,22 @@ def bar_chart(
 
 
 def scatter_chart(
-        data,
-        x,
-        y,
-        color=None,
-        size=None,
-        opacity=None,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='right',
-        pan_zoom='both',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    size=None,
+    opacity=None,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="right",
+    pan_zoom="both",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw a scatter-plot chart.
 
     Parameters
@@ -1024,7 +1061,7 @@ def scatter_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
     legend = _get_legend_dict(legend)
@@ -1038,7 +1075,7 @@ def scatter_chart(
     )
 
     spec = _(
-        mark=_(type='circle', tooltip=True),
+        mark=_(type="circle", tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x),
             y=y_enc,
@@ -1047,47 +1084,49 @@ def scatter_chart(
             opacity=_clean_encoding(data, opacity, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
-        config=_parse_config(config, "both")
+        config=_parse_config(config, "both"),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
 
-    if pan_zoom == 'minimap':
-        spec = _add_minimap(spec, ['x', 'y'], 'bottom')
+    if pan_zoom == "minimap":
+        spec = _add_minimap(spec, ["x", "y"], "bottom")
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
 
 
 def _pie_spec(
-        data,
-        theta,
-        color,
-        legend,
-        config,
-    ):
+    data,
+    theta,
+    color,
+    legend,
+    config,
+):
     return _(
-        mark=_(type='arc', tooltip=True),
+        mark=_(type="arc", tooltip=True),
         view=_(stroke=None),
         encoding=_(
             theta=_clean_encoding(data, theta),
-            color=_clean_encoding(data, color, title=None, legend=_get_legend_dict(legend)),
+            color=_clean_encoding(
+                data, color, title=None, legend=_get_legend_dict(legend)
+            ),
         ),
-        config=_parse_config(config, "none")
+        config=_parse_config(config, "none"),
     )
 
 
 def pie_chart(
-        data,
-        theta,
-        color,
-        width=None,
-        height=None,
-        title=None,
-        legend='right',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    theta,
+    color,
+    width=None,
+    height=None,
+    title=None,
+    legend="right",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw a pie chart.
 
     Parameters
@@ -1113,7 +1152,7 @@ def pie_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
 
@@ -1138,16 +1177,16 @@ def pie_chart(
 
 
 def donut_chart(
-        data,
-        theta,
-        color,
-        width=None,
-        height=None,
-        title=None,
-        legend='right',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    theta,
+    color,
+    width=None,
+    height=None,
+    title=None,
+    legend="right",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw a donut chart.
 
     Parameters
@@ -1173,7 +1212,7 @@ def donut_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
 
@@ -1195,9 +1234,9 @@ def donut_chart(
     if height:
         innerRadius = height // 4
     else:
-        innerRadius = 50 # Default height is 200 in Streamlit's Vega-Lite element.
+        innerRadius = 50  # Default height is 200 in Streamlit's Vega-Lite element.
 
-    spec['mark']['innerRadius'] = innerRadius
+    spec["mark"]["innerRadius"] = innerRadius
 
     spec.update(meta)
 
@@ -1205,23 +1244,23 @@ def donut_chart(
 
 
 def event_chart(
-        data,
-        x,
-        y,
-        color=None,
-        size=None,
-        opacity=0.5,
-        thickness=2,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom='both',
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    size=None,
+    opacity=0.5,
+    thickness=2,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom="both",
+    use_container_width=True,
+    config="streamlit",
+):
     """Draw an event chart.
 
     Parameters
@@ -1288,7 +1327,7 @@ def event_chart(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
 
@@ -1302,7 +1341,7 @@ def event_chart(
     )
 
     spec = _(
-        mark=_(type='tick', tooltip=True, thickness=thickness),
+        mark=_(type="tick", tooltip=True, thickness=thickness),
         encoding=_(
             x=_clean_encoding(data, x),
             y=_clean_encoding(data, y),
@@ -1311,35 +1350,35 @@ def event_chart(
             opacity=_clean_encoding(data, opacity, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
-        config=_parse_config(config, "vertical")
+        config=_parse_config(config, "vertical"),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
     spec.update(meta)
 
-    if pan_zoom == 'minimap':
-        spec = _add_minimap(spec, ['x'], 'bottom')
+    if pan_zoom == "minimap":
+        spec = _add_minimap(spec, ["x"], "bottom")
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
 
 
 def time_hist(
-        data,
-        date,
-        x_unit,
-        y_unit,
-        color=None,
-        aggregate='count',
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom=None,
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    date,
+    x_unit,
+    y_unit,
+    color=None,
+    aggregate="count",
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom=None,
+    use_container_width=True,
+    config="streamlit",
+):
     """Calculate and draw a time histogram.
 
     Parameters
@@ -1396,7 +1435,7 @@ def time_hist(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
 
@@ -1408,14 +1447,26 @@ def time_hist(
     )
 
     spec = _(
-        mark=_(type='rect', tooltip=True),
+        mark=_(type="rect", tooltip=True),
         encoding=_(
-            x=_(field=date, type='ordinal', timeUnit=x_unit, title=None, axis=_(tickBand='extent')),
-            y=_(field=date, type='ordinal', timeUnit=y_unit, title=None, axis=_(tickBand='extent')),
-            color=_clean_encoding(data, color, aggregate=aggregate, legend=legend)
+            x=_(
+                field=date,
+                type="ordinal",
+                timeUnit=x_unit,
+                title=None,
+                axis=_(tickBand="extent"),
+            ),
+            y=_(
+                field=date,
+                type="ordinal",
+                timeUnit=y_unit,
+                title=None,
+                axis=_(tickBand="extent"),
+            ),
+            color=_clean_encoding(data, color, aggregate=aggregate, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
-        config=_parse_config(config, "none")
+        config=_parse_config(config, "none"),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1425,23 +1476,23 @@ def time_hist(
 
 
 def xy_hist(
-        data,
-        x,
-        y,
-        color=None,
-        aggregate='count',
-        x_bin=True,
-        y_bin=True,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom=None,
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    aggregate="count",
+    x_bin=True,
+    y_bin=True,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom=None,
+    use_container_width=True,
+    config="streamlit",
+):
     """Calculate and draw an x-y histogram (i.e. 2D histogram).
 
     Parameters
@@ -1510,7 +1561,7 @@ def xy_hist(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
 
@@ -1522,14 +1573,14 @@ def xy_hist(
     )
 
     spec = _(
-        mark=_(type='rect', tooltip=True),
+        mark=_(type="rect", tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x, bin=x_bin),
             y=_clean_encoding(data, y, bin=y_bin),
-            color=_clean_encoding(data, color, aggregate=aggregate, legend=legend)
+            color=_clean_encoding(data, color, aggregate=aggregate, legend=legend),
         ),
         selection=_get_selection(pan_zoom),
-        config=_parse_config(config, "none")
+        config=_parse_config(config, "none"),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1539,21 +1590,21 @@ def xy_hist(
 
 
 def hist(
-        data,
-        x,
-        y=None,
-        aggregate='count',
-        bin=None,
-        x_annot=None,
-        y_annot=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom=None,
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y=None,
+    aggregate="count",
+    bin=None,
+    x_annot=None,
+    y_annot=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom=None,
+    use_container_width=True,
+    config="streamlit",
+):
     """Calculate and draw a histogram.
 
     Parameters
@@ -1608,7 +1659,7 @@ def hist(
         If True, sets the chart to use all available space. This takes precedence over the width
         parameter.
     config : str or dict
-        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's 
+        Config of the chart. 'streamlit' for a modern design, None for Vega-Lite's
         default design, or a custom Vega-Lite config dict.
     """
 
@@ -1620,13 +1671,13 @@ def hist(
     )
 
     spec = _(
-        mark=_(type='bar', tooltip=True),
+        mark=_(type="bar", tooltip=True),
         encoding=_(
             x=_clean_encoding(data, x, bin=bin or True),
             y=_clean_encoding(data, y, aggregate=aggregate),
         ),
         selection=_get_selection(pan_zoom),
-        config=_parse_config(config)
+        config=_parse_config(config),
     )
 
     spec = _add_annotations(spec, x_annot, y_annot)
@@ -1636,28 +1687,28 @@ def hist(
 
 
 def scatter_hist(
-        data,
-        x,
-        y,
-        color=None,
-        size=None,
-        opacity=None,
-        aggregate='count',
-        x_bin=None,
-        y_bin=None,
-        width=None,
-        height=None,
-        title=None,
-        legend='bottom',
-        pan_zoom=None,
-        use_container_width=True,
-        config='streamlit',
-    ):
+    data,
+    x,
+    y,
+    color=None,
+    size=None,
+    opacity=None,
+    aggregate="count",
+    x_bin=None,
+    y_bin=None,
+    width=None,
+    height=None,
+    title=None,
+    legend="bottom",
+    pan_zoom=None,
+    use_container_width=True,
+    config="streamlit",
+):
 
     legend = _get_legend_dict(legend)
 
     scatter_spec = _(
-        mark=_(type='circle', tooltip=True),
+        mark=_(type="circle", tooltip=True),
         width=width,
         height=height,
         title=title,
@@ -1671,7 +1722,7 @@ def scatter_hist(
     )
 
     x_hist_spec = _(
-        mark=_(type='bar', tooltip=True),
+        mark=_(type="bar", tooltip=True),
         width=width,
         height=_MINI_CHART_SIZE,
         encoding=_(
@@ -1681,7 +1732,7 @@ def scatter_hist(
     )
 
     y_hist_spec = _(
-        mark=_(type='bar', tooltip=True),
+        mark=_(type="bar", tooltip=True),
         height=height,
         width=_MINI_CHART_SIZE,
         encoding=_(
@@ -1694,7 +1745,7 @@ def scatter_hist(
         data=data,
         title=title,
         vconcat=[x_hist_spec, _(hconcat=[scatter_spec, y_hist_spec])],
-        config=_parse_config(config, "both")
+        config=_parse_config(config, "both"),
     )
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)

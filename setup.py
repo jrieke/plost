@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.md", "r", encoding='utf8') as fh:
+with open("README.md", "r", encoding="utf8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -14,11 +14,12 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/tvst/plost",
     packages=["plost"],
-    install_requires=["colour"], # Not including Streamlit here to allow nightlies, etc.
+    # Not including Streamlit here to allow nightlies, etc.
+    install_requires=["colour"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.5',
+    python_requires=">=3.5",
 )
