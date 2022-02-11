@@ -748,7 +748,7 @@ def gradient_chart(
                     ),
                 ),
                 mark=_(
-                    type="point", filled=True, stroke="white", size=70, tooltip=True
+                    type="point", filled=True, fill=color, stroke="white", size=70, tooltip=True
                 ),
                 encoding=_(
                     # y=y_enc,
