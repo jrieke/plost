@@ -13,20 +13,50 @@ from .color_palette import get_color, increase_luminance
 # Syntactic sugar to make VegaLite more fun.
 _ = dict
 
-# Config applied to all plots. This sets the style for axes and colors.
 default_color = get_color("blue-70")
-default_color_scheme = [
+# Color scheme for config='streamlit'
+# This is used if there are multiple lines/areas/etc in a chart, so subsequent colors
+# should have large contrast.
+# streamlit_color_scheme = [
+#     get_color("blue-70"),
+#     get_color("orange-70"),
+#     get_color("red-70"),
+#     get_color("teal-70"),
+#     get_color("green-70"),
+#     get_color("yellow-70"),
+#     get_color("violet-70"),
+#     get_color("cyan-70"),
+# ]
+# This one is more similar to category10.
+streamlit_color_scheme = [
     get_color("blue-70"),
     get_color("orange-70"),
     get_color("green-70"),
     get_color("red-70"),
-    get_color("teal-70"),
     get_color("violet-70"),
+    get_color("teal-70"),
+    get_color("yellow-70"),
     get_color("cyan-70"),
 ]
 
+# Color cycle for config='streamlit'
+# This is used when there are multiple charts after another, so subsequent colors should
+# have a smooth transition.
+color_cycle = cycle(
+    [
+        get_color("violet-70"),
+        get_color("cyan-70"),
+        get_color("orange-70"),
+        get_color("teal-70"),
+        get_color("blue-70"),
+        get_color("red-70"),
+        get_color("green-70"),
+    ]
+)
+
 
 def _parse_config(config, grid="horizontal"):
+    """Returns a config dict for Vega-Lite."""
     if config is None:  # use Vega-Lite's defaults
         return {}
     elif config == "streamlit":  # use a custom config
@@ -52,7 +82,7 @@ def _parse_config(config, grid="horizontal"):
             tick=_(fill=default_color),
             circle=_(fill=default_color),
             range=_(
-                category=default_color_scheme,
+                category=streamlit_color_scheme,
                 # TODO: Define continuous color schemes using a function as in
                 #   https://vega.github.io/vega/docs/schemes/
                 # ordinal=_(scheme="greens"),
@@ -80,19 +110,6 @@ def _parse_config(config, grid="horizontal"):
         return config
     else:  # try to use config given by user
         return config
-
-
-color_cycle = cycle(
-    [
-        get_color("blue-70"),
-        get_color("teal-70"),
-        get_color("violet-70"),
-        get_color("red-70"),
-        get_color("teal-70"),
-        get_color("violet-70"),
-        get_color("cyan-70"),
-    ]
-)
 
 
 def _clean_encoding(data, enc, **kwargs):

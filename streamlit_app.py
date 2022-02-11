@@ -667,13 +667,12 @@ with st.echo():
 If you plot multiple charts after another, they will cycle through a list of colors. This 
 works only with `config='streamlit'` and for charts with a single line/area/etc.
 If a chart contains multiple elements with different colors, color cycling won't work. 
-You can manually switch off color cycling by passing `cycle_color=False` to a chart.
+~You can manually switch off color cycling by passing `cycle_color=False` to a chart.~
 """
 
 with st.echo():
     for _ in range(3):
         plost.line_chart(data=datasets["seattle_weather"], x="date", y="temp_max")
-
 
 ""
 ""
