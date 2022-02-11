@@ -481,7 +481,12 @@ def line_chart(
 
     # If there's only one line, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-or isinstance(y, dict)         color = next(color_cycle)
+    if (
+        (isinstance(y, str) or isinstance(y, dict) or len(y) == 1)
+        and not color
+        and config == "streamlit"
+    ):
+        color = next(color_cycle)
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
@@ -655,22 +660,27 @@ def gradient_chart(
     legend = _get_legend_dict(legend)
     melted, data, y_enc, color_enc = _maybe_melt(data, x, y, legend, opacity)
 
-    # If there's only one area, cycle through the colors for subsequent charts. Only
+    # If there's only one gradient, cycle through the colors for subsequent charts. Only
     # in streamlit style.
     # TODO: This also cycles color now if a dict was given to y. This is so that e.g.
     # `dict(field="num_views", aggregate="sum")` (which still results in a single line)
     # does also get color cycling. Does this make sense?
-    if (isinstance(y, str) or isinstance(y, dict) or len(y) == 1) and not color and config == "streamlit":
+    if (
+        (isinstance(y, str) or isinstance(y, dict) or len(y) == 1)
+        and not color
+        and config == "streamlit"
+    ):
         color = next(color_cycle)
 
     # TODO: Raise error if y contains multiple items or color is not a color value.
 
     if color:
-        color_enc = _clean_encoding(data, color, legend=legend)
+        # TODO: Is color_enc even needed here? Only allowing single line anyway.
+        # color_enc = _clean_encoding(data, color, legend=legend)
         gradient_light_color = increase_luminance(color)
     else:
         # TODO: Make this work with color.
-        # TODO: Use color-30 for the actual gradient fill.
+        # TODO: Make this work if another default color is defined through config.
         gradient_light_color = increase_luminance(default_color)
 
     # if stack is not None:
@@ -742,7 +752,7 @@ def gradient_chart(
                 ),
                 encoding=_(
                     # y=y_enc,
-                    color=color_enc,
+                    # color=color_enc,
                     opacity=_(
                         condition=_(selection="hover_selection", value=1), value=0
                     ),
@@ -860,7 +870,12 @@ def area_chart(
 
     # If there's only one area, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-or isinstance(y, dict)         color = next(color_cycle)
+    if (
+        (isinstance(y, str) or isinstance(y, dict) or len(y) == 1)
+        and not color
+        and config == "streamlit"
+    ):
+        color = next(color_cycle)
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
