@@ -308,7 +308,9 @@ def _add_minimap(orig_spec, encodings, location, filter=False):
         minimap_spec["encoding"]["y"]["axis"] = None
 
     minimap_spec["selection"] = _(
-        brush=_(type="interval", encodings=encodings),
+        brush=_(
+            type="interval", encodings=encodings, empty="all" if filter else "none"
+        ),
     )
 
     if filter:
@@ -321,6 +323,25 @@ def _add_minimap(orig_spec, encodings, location, filter=False):
             enc["scale"] = enc.get("scale", {})
             enc["scale"]["domain"] = _(selection="brush", encoding=k)
             enc["title"] = None
+
+    # Make the minimap opaque and only show the selected area with opacity 1.
+    # For line and area charts, this is complex because you cannot set different opacity
+    # values on a single line. Instead, we need to set the original chart to lower
+    # opacity, move it to a layer, and then add a 2nd layer with opacity 1 that contains
+    # only the part of the line that is selected.
+    minimap_spec["encoding"]["opacity"] = _(value=0.3)
+    minimap_spec["layer"] = [
+        _(selection=minimap_spec["selection"], mark=minimap_spec["mark"]),
+        _(
+            transform=[_(filter=_(selection="brush"))],
+            mark=minimap_spec["mark"],
+            encoding=_(opacity=_(value=1)),
+        ),
+    ]
+    del minimap_spec["selection"]
+    del minimap_spec["mark"]
+    # st.write(minimap_spec)
+    # minimap_spec["mark"]["type"] = "point"
 
     if location == "right":
         outer_spec["hconcat"] = [inner_spec, minimap_spec]

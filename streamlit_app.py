@@ -221,25 +221,67 @@ _ = dict
 # spec = {
 #     "width": 500,
 #     "data": datasets["seattle_weather"],
-#     "selection": {
-#         "hover": {
-#             "type": "single",
-#             "on": "mouseover",
-#             "empty": "none",
-#             "clear": "mouseout",
-#             "nearest": True,
-#             "encodings": ["x"],
-#         }
-#     },
+#     # "selection": {
+#     #     "hover": {
+#     #         "type": "single",
+#     #         "on": "mouseover",
+#     #         "empty": "none",
+#     #         "clear": "mouseout",
+#     #         "nearest": True,
+#     #         "encodings": ["x"],
+#     #     }
+#     # },
 #     "encoding": {
 #         "x": {"field": "date", "type": "temporal"},
 #         "y": {"field": "temp_max", "type": "quantitative"},
 #     },
-#      "mark": {"type": "line", "condition": {"selection": "hover", "type": "point"}},
+#     "mark": {"type": "line"},
 # }
 
 # st.vega_lite_chart(spec)
 
+
+# spec = {
+#     "data": datasets["seattle_weather"],
+#     # "encoding": {
+#     #     "x": {"field": "date", "type": "temporal"},
+#     #     "y": {"field": "temp_max", "type": "quantitative"},
+#     # },
+#     # "layer": [
+#     #     {
+#     #         "selection": {"brush": {"type": "interval", "encodings": ["x"]}},
+#     #         "mark": "area",
+#     #     },
+#     #     {
+#     #         "transform": [{"filter": {"selection": "brush"}}],
+#     #         "mark": {"type": "area", "color": "goldenrod"},
+#     #     },
+#     # ],
+#     "encoding": {
+#         "x": {"field": "date", "type": "temporal"},
+#         "y": {
+#             "field": "temp_max",
+#             "type": "quantitative",
+#         },
+#         # "color": {"legend": {"orient": "bottom"}, "value": "#00c0f2"},
+#         "opacity": {"value": 0.5},
+#     },
+#     # #   "width": 500,
+#     # #   "height": 50,
+#     # # "mark": {"type": "line"}
+#     "layer": [
+#         {
+#             "selection": {"brush": {"type": "interval", "encodings": ["x"]}},
+#             "mark": "area",
+#         },
+#         {
+#             "transform": [{"filter": {"selection": "brush"}}],
+#             "mark": {"type": "area", "color": "goldenrod"},
+#             # "encoding": {"opacity": {"value": 0.5}},
+#         },
+#     ],
+# }
+# st.vega_lite_chart(spec)
 
 ###
 
@@ -569,6 +611,13 @@ You can add a minimap to many of the charts above my simply passing `pan_zoom='m
 
 with st.echo():
     plost.line_chart(
+        data=datasets["sp500"], x="date", y="price", width=500, pan_zoom="minimap"
+    )
+
+"---"
+
+with st.echo():
+    plost.gradient_chart(
         data=datasets["sp500"], x="date", y="price", width=500, pan_zoom="minimap"
     )
 
