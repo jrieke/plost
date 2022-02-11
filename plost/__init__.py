@@ -674,14 +674,16 @@ def gradient_chart(
 
     # TODO: Raise error if y contains multiple items or color is not a color value.
 
-    if color:
-        # TODO: Is color_enc even needed here? Only allowing single line anyway.
-        # color_enc = _clean_encoding(data, color, legend=legend)
-        gradient_light_color = increase_luminance(color)
-    else:
-        # TODO: Make this work with color.
-        # TODO: Make this work if another default color is defined through config.
-        gradient_light_color = increase_luminance(default_color)
+    if not color:
+        color = default_color
+    
+    # TODO: Is color_enc even needed here? Only allowing single line anyway.
+    # color_enc = _clean_encoding(data, color, legend=legend)
+    gradient_light_color = increase_luminance(color)
+    # else:
+    #     # TODO: Make this work with color.
+    #     # TODO: Make this work if another default color is defined through config.
+    #     gradient_light_color = increase_luminance(default_color)
 
     # if stack is not None:
     #     if stack is True:
