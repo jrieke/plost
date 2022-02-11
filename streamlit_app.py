@@ -563,7 +563,7 @@ with st.echo():
 ## Vega-Lite encoding dicts
 
 You can use [Vega-Lite encoding dicts](https://vega.github.io/vega-lite/docs/encoding.html) for
-the `x`, `y`, `color`, `size`, and `opacity` arguments to do all sorts of fun things. For example,
+the `x`, `y`, `color`, `size`, `opacity`, and `config` arguments to do all sorts of fun things. For example,
 the chart below is computing the mean of the `y` values, grouped by month.
 """
 
@@ -669,9 +669,7 @@ with st.echo():
 """
 ---
 
-# Style and colors
-
-## Default styles
+## Styling
 
 There are two default styles: Passing `config='streamlit'` to a chart (this is the 
 default) activates a modern style with Streamlit's color palette:
@@ -682,7 +680,7 @@ with st.echo():
         data=datasets["seattle_weather"], x="date", y="temp_max", config="streamlit"
     )
 
-""
+"---"
 
 "To switch back to Vega-Lite's default style, pass `config=None`:"
 
@@ -691,10 +689,8 @@ with st.echo():
         data=datasets["seattle_weather"], x="date", y="temp_max", config=None
     )
 
-"---"
-
 """
-## Custom style
+---
 
 You can also pass a [custom config dict](https://vega.github.io/vega-lite/docs/config.html)
 to a chart to style it in any way you like:
