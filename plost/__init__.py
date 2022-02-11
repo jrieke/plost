@@ -481,8 +481,7 @@ def line_chart(
 
     # If there's only one line, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and config == "streamlit":
-        color = next(color_cycle)
+or isinstance(y, dict)         color = next(color_cycle)
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
@@ -658,13 +657,21 @@ def gradient_chart(
 
     # If there's only one area, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and config == "streamlit":
+    # TODO: This also cycles color now if a dict was given to y. This is so that e.g.
+    # `dict(field="num_views", aggregate="sum")` (which still results in a single line)
+    # does also get color cycling. Does this make sense?
+    if (isinstance(y, str) or isinstance(y, dict) or len(y) == 1) and not color and config == "streamlit":
         color = next(color_cycle)
 
     # TODO: Raise error if y contains multiple items or color is not a color value.
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
+        gradient_light_color = increase_luminance(color)
+    else:
+        # TODO: Make this work with color.
+        # TODO: Use color-30 for the actual gradient fill.
+        gradient_light_color = increase_luminance(default_color)
 
     # if stack is not None:
     #     if stack is True:
@@ -678,13 +685,6 @@ def gradient_chart(
         height=height,
         title=title,
     )
-
-    # TODO: Make this work with color.
-    # TODO: Use color-30 for the actual gradient fill.
-    # area_color = next(color_cycle)
-
-    # TODO: Make this work if color is not defined but the default color is used.)
-    gradient_light_color = increase_luminance(color)
 
     spec = _(
         encoding=_(
@@ -860,8 +860,7 @@ def area_chart(
 
     # If there's only one area, cycle through the colors for subsequent charts. Only
     # in streamlit style.
-    if (isinstance(y, str) or len(y) == 1) and not color and config == "streamlit":
-        color = next(color_cycle)
+or isinstance(y, dict)         color = next(color_cycle)
 
     if color:
         color_enc = _clean_encoding(data, color, legend=legend)
@@ -1854,3 +1853,17 @@ def scatter_hist(
     )
 
     st.vega_lite_chart(spec, use_container_width=use_container_width)
+
+
+def header(label, description=None, color=None):
+    """Shows a header with a colored underline and an optional description."""
+    # TODO: Allow to choose one of our brand colors.
+    if color is None:
+        color = next(color_cycle)
+    st.subheader(label)
+    st.write(
+        f'<hr style="background-color: {color}; margin-top: 0; margin-bottom: 0; height: 3px; border: none; border-radius: 3px;">',
+        unsafe_allow_html=True,
+    )
+    if description:
+        st.caption(description)
