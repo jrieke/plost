@@ -7,8 +7,9 @@ import copy
 import numbers
 import streamlit as st
 from itertools import cycle
+from colour import Color
 
-from .color_palette import get_color, increase_luminance
+from .color_palette import get_color, increase_luminance, make_transparent
 
 # Syntactic sugar to make VegaLite more fun.
 _ = dict
@@ -676,7 +677,7 @@ def gradient_chart(
 
     if not color:
         color = default_color
-    
+
     # TODO: Is color_enc even needed here? Only allowing single line anyway.
     # color_enc = _clean_encoding(data, color, legend=legend)
     gradient_light_color = increase_luminance(color)
@@ -686,7 +687,7 @@ def gradient_chart(
     #     gradient_light_color = increase_luminance(default_color)
 
     # if stack is not None:
-    #     if stack is True:
+    #     if stack is True:®
     #         y_enc['stack'] = 'zero'
     #     else:
     #         y_enc['stack'] = stack
@@ -717,8 +718,8 @@ def gradient_chart(
                         y2=0,
                         gradient="linear",
                         stops=[
-                            _(offset=0, color="white"),
-                            _(offset=1, color=gradient_light_color),
+                            _(offset=0, color=Color(color).hex + "00"),
+                            _(offset=1, color=Color(color).hex + "55"),
                         ],
                     ),
                 ),
@@ -750,7 +751,12 @@ def gradient_chart(
                     ),
                 ),
                 mark=_(
-                    type="point", filled=True, fill=color, stroke="white", size=70, tooltip=True
+                    type="point",
+                    filled=True,
+                    fill=color,
+                    stroke="white",
+                    size=70,
+                    tooltip=True,
                 ),
                 encoding=_(
                     # y=y_enc,
