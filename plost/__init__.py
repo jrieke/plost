@@ -1002,7 +1002,12 @@ def bar_chart(
 
     # If there's only one color of bars, cycle through the colors for subsequent charts.
     # Only in streamlit style.
-    if not color and config == "streamlit" and stack != "normalize":
+    if (
+        (isinstance(value, str) or isinstance(value, dict) or len(value) == 1)
+        and not color
+        and config == "streamlit"
+        # and stack != "normalize"
+    ):
         color = next(color_cycle)
 
     if color:
@@ -1060,6 +1065,64 @@ def bar_chart(
         ),
         config=config,
     )
+
+    # TODO: Tried out making hover markers work for bar charts. Doesn't work for all
+    # charts unfortunately.
+    # spec = _(
+    #     encoding=_(
+    #         x=x_enc,
+    #         y=y_enc,
+    #         color=color_enc,
+    #         opacity=_clean_encoding(data, opacity),
+    #         column=column_enc,
+    #         row=row_enc,
+    #     ),
+    #     layer=[
+    #         _(
+    #             # This is the layer that draws the normal line.
+    #             mark=_(type="bar"),
+    #             # encoding=_(
+    #             #     color=color_enc,
+    #             #     opacity=_clean_encoding(data, opacity),
+    #             # )
+    #         ),
+    #         _(
+    #             # This layer shows a point on the line when you hover.
+    #             # It achieves this by drawing points everywhere, but setting them to
+    #             # opacity 0, and then setting the hovered point to opacity 1 through a
+    #             # selection named "hover_selection".
+    #             selection=_(
+    #                 hover_selection=_(
+    #                     type="single",
+    #                     on="mouseover",
+    #                     empty="none",
+    #                     clear="mouseout",
+    #                     # TODO: nearest=True doesn't work if there are multiple lines,
+    #                     # so manually turning it off for that case.
+    #                     # I.e. for multiple lines, you need to hover exactly on the line.
+    #                     # This can be fixed by using params instead of selections, but
+    #                     # they are only available in vega lite 5 (streamlit only
+    #                     # supports 4).
+    #                     nearest=True
+    #                     if y_enc.get("field", "") is not "value"
+    #                     else False,
+    #                     encodings=["y"] if direction == "horizontal" else ["x"],
+    #                 ),
+    #             ),
+    #             mark=_(
+    #                 type="point", filled=True, stroke="white", size=70, tooltip=True
+    #             ),
+    #             encoding=_(
+    #                 # y=y_enc,
+    #                 # color=color_enc,
+    #                 opacity=_(
+    #                     condition=_(selection="hover_selection", value=1), value=0
+    #                 ),
+    #             ),
+    #         ),
+    #     ],
+    #     config=_parse_config(config),
+    # )
 
     spec.update(meta)
 
